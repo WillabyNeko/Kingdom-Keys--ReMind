@@ -32,6 +32,10 @@
 - **[REWORK]** Light Step Rework - It now makes you move in an arcing motion
 - **[REWORK]** Dark Step Rework - It now makes you -blink- a few blocks in the direction you're facing, leaving an afterimage.
 
+## Monster Adjustment
+### Cactuar
+- Base HP: ~~202~~ -> 75
+
 ## New Drive Form Magic Loadouts
 - Drive Forms can now have their own dedicated magic loadouts.
 - Entering a supported Form temporarily replaces your equipped spells with that Form’s configured magic.

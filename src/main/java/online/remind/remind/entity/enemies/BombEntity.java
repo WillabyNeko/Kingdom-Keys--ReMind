@@ -336,7 +336,7 @@ public class BombEntity extends Monster implements GeoEntity {
 
     public static AttributeSupplier.Builder createBombAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 120.0D)
+                .add(Attributes.MAX_HEALTH, 100.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.22D)
                 .add(Attributes.ATTACK_DAMAGE, 6.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 0.25D)
@@ -347,7 +347,7 @@ public class BombEntity extends Monster implements GeoEntity {
 
     public static AttributeSupplier.Builder createGrenadeAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 220.0D)
+                .add(Attributes.MAX_HEALTH, 200.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.23D)
                 .add(Attributes.ATTACK_DAMAGE, 10.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 0.40D)
@@ -358,7 +358,7 @@ public class BombEntity extends Monster implements GeoEntity {
 
     public static AttributeSupplier.Builder createVolcanoAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 360.0D)
+                .add(Attributes.MAX_HEALTH, 320.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.24D)
                 .add(Attributes.ATTACK_DAMAGE, 14.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 0.60D)

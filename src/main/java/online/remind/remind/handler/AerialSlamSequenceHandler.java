@@ -331,15 +331,10 @@ public class AerialSlamSequenceHandler {
 
     private static boolean applyScriptedDamage(ServerPlayer player, LivingEntity target, float damage) {
         target.invulnerableTime = 0;
-        APPLYING_SCRIPTED_DAMAGE.set(true);
 
-        boolean hit;
-
-        try {
-            hit = target.hurt(player.damageSources().playerAttack(player), damage);
-        } finally {
-            APPLYING_SCRIPTED_DAMAGE.set(false);
-        }
+        boolean hit = ScriptedAttackDamageHandler.hurt(() ->
+                target.hurt(player.damageSources().playerAttack(player), damage)
+        );
 
         target.invulnerableTime = 0;
         return hit;

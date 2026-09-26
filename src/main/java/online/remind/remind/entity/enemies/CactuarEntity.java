@@ -362,12 +362,12 @@ public class CactuarEntity extends Monster implements GeoEntity {
 
     public static AttributeSupplier.Builder createNormalAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 202.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.34D)
+                .add(Attributes.MAX_HEALTH, 75.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.30D)
                 .add(Attributes.ATTACK_DAMAGE, 2.0D)
                 .add(Attributes.ATTACK_KNOCKBACK, 0.25D)
-                .add(Attributes.FOLLOW_RANGE, 24.0D)
-                .add(Attributes.KNOCKBACK_RESISTANCE, 0.15D);
+                .add(Attributes.FOLLOW_RANGE, 18.0D)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 0.10D);
     }
 
     public static AttributeSupplier.Builder createJumboAttributes() {
@@ -682,7 +682,7 @@ public class CactuarEntity extends Monster implements GeoEntity {
              * Total damage: 10.0F
              */
             this.needleHitsRemaining = 25;
-            this.needleDamagePerHit = 0.5F;
+            this.needleDamagePerHit = 0.25F;
         }
     }
 

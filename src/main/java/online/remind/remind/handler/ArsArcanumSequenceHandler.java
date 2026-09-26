@@ -223,13 +223,9 @@ public class ArsArcanumSequenceHandler {
         // Allow Multi-hits to work
         target.invulnerableTime = 0;
 
-        APPLYING_SCRIPTED_DAMAGE.set(true);
-
-        try {
-            target.hurt(player.damageSources().playerAttack(player), damage); // Allow only our scripted Ars Arcanum hit
-        } finally {
-            APPLYING_SCRIPTED_DAMAGE.set(false);
-        }
+        ScriptedAttackDamageHandler.hurt(() ->
+                target.hurt(player.damageSources().playerAttack(player), damage)
+        );
 
         target.invulnerableTime = 0;
 
