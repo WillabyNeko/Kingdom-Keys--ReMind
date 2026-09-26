@@ -63,7 +63,6 @@ public class CactuarSpiritEntity extends PathfinderMob implements GeoEntity {
     private static final int NEEDLES_ANIM_TICKS = 46;
 
     private static final double FOLLOW_DISTANCE_SQR = 7.0D;
-    private static final double TELEPORT_DISTANCE_SQR = 196.0D;
 
     private static final EntityDataAccessor<Optional<UUID>> OWNER_UUID =
             SynchedEntityData.defineId(CactuarSpiritEntity.class, EntityDataSerializers.OPTIONAL_UUID);
@@ -232,6 +231,15 @@ public class CactuarSpiritEntity extends PathfinderMob implements GeoEntity {
             return;
         }
 
+        UUID registeredDreamEaterUUID = data.getDreamEaterUUID();
+
+        if (!data.hasDreamEaterSummoned()
+                || registeredDreamEaterUUID == null
+                || !this.getUUID().equals(registeredDreamEaterUUID)) {
+            this.discard();
+            return;
+        }
+
         if (owner.isDeadOrDying()) {
             clearDreamEaterData(owner, data);
             this.discard();
@@ -292,20 +300,7 @@ public class CactuarSpiritEntity extends PathfinderMob implements GeoEntity {
     }
 
     private void followOwner(Player owner) {
-        double distanceSqr = this.distanceToSqr(owner);
-
-        if (distanceSqr > TELEPORT_DISTANCE_SQR) {
-            this.teleportTo(
-                    owner.getX() + 1.0D,
-                    owner.getY(),
-                    owner.getZ() + 1.0D
-            );
-
-            this.getNavigation().stop();
-            return;
-        }
-
-        if (distanceSqr > FOLLOW_DISTANCE_SQR) {
+        if (this.distanceToSqr(owner) > FOLLOW_DISTANCE_SQR) {
             this.getNavigation().moveTo(owner, 1.18D);
         } else {
             this.getNavigation().stop();

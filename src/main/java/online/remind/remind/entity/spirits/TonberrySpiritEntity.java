@@ -88,7 +88,6 @@ public class TonberrySpiritEntity extends PathfinderMob implements GeoEntity {
 
     private static final double FOLLOW_START_DISTANCE = 8.0D;
     private static final double FOLLOW_STOP_DISTANCE = 4.0D;
-    private static final double TELEPORT_DISTANCE = 20.0D;
 
     /*
      * Tonberry Spirit stat identity:
@@ -551,12 +550,19 @@ public class TonberrySpiritEntity extends PathfinderMob implements GeoEntity {
             return;
         }
 
-        if (getOwnerUUID() == null) {
+        Player owner = getOwnerPlayer();
+
+        if (getOwnerUUID() == null || owner == null) {
             this.discard();
             return;
         }
 
-        if (getOwnerPlayer() == null) {
+        GlobalDataRM data = ModDataRM.getGlobal(owner);
+
+        if (data == null
+                || !data.hasDreamEaterSummoned()
+                || data.getDreamEaterUUID() == null
+                || !this.getUUID().equals(data.getDreamEaterUUID())) {
             this.discard();
         }
     }
@@ -918,15 +924,11 @@ public class TonberrySpiritEntity extends PathfinderMob implements GeoEntity {
     public Player getOwnerPlayer() {
         UUID ownerUUID = getOwnerUUID();
 
-        if (ownerUUID == null) {
+        if (ownerUUID == null || this.level().getServer() == null) {
             return null;
         }
 
-        if (this.level() instanceof ServerLevel serverLevel) {
-            return serverLevel.getPlayerByUUID(ownerUUID);
-        }
-
-        return this.level().getPlayerByUUID(ownerUUID);
+        return this.level().getServer().getPlayerList().getPlayer(ownerUUID);
     }
 
     private boolean isOwner(Player player) {
@@ -1145,7 +1147,9 @@ public class TonberrySpiritEntity extends PathfinderMob implements GeoEntity {
         public boolean canUse() {
             Player ownerPlayer = this.spirit.getOwnerPlayer();
 
-            if (ownerPlayer == null || !ownerPlayer.isAlive()) {
+            if (ownerPlayer == null
+                    || !ownerPlayer.isAlive()
+                    || ownerPlayer.level() != this.spirit.level()) {
                 return false;
             }
 
@@ -1159,7 +1163,9 @@ public class TonberrySpiritEntity extends PathfinderMob implements GeoEntity {
 
         @Override
         public boolean canContinueToUse() {
-            if (this.owner == null || !this.owner.isAlive()) {
+            if (this.owner == null
+                    || !this.owner.isAlive()
+                    || this.owner.level() != this.spirit.level()) {
                 return false;
             }
 
@@ -1187,50 +1193,19 @@ public class TonberrySpiritEntity extends PathfinderMob implements GeoEntity {
                 return;
             }
 
-            this.spirit.getLookControl().setLookAt(this.owner, 10.0F, this.spirit.getMaxHeadXRot());
-
-            if (this.spirit.distanceToSqr(this.owner) > TELEPORT_DISTANCE * TELEPORT_DISTANCE) {
-                teleportNearOwner();
-                return;
-            }
+            this.spirit.getLookControl().setLookAt(
+                    this.owner,
+                    10.0F,
+                    this.spirit.getMaxHeadXRot()
+            );
 
             if (--this.repathTicks <= 0) {
                 this.repathTicks = 10;
-                this.spirit.getNavigation().moveTo(this.owner, this.speedModifier);
-            }
-        }
-
-        private void teleportNearOwner() {
-            BlockPos ownerPos = this.owner.blockPosition();
-
-            for (int i = 0; i < 16; i++) {
-                int x = ownerPos.getX() + this.spirit.getRandom().nextInt(7) - 3;
-                int y = ownerPos.getY() + this.spirit.getRandom().nextInt(3) - 1;
-                int z = ownerPos.getZ() + this.spirit.getRandom().nextInt(7) - 3;
-
-                BlockPos pos = new BlockPos(x, y, z);
-
-                if (!this.spirit.level().isEmptyBlock(pos) || !this.spirit.level().isEmptyBlock(pos.above())) {
-                    continue;
-                }
-
-                if (!this.spirit.level().getBlockState(pos.below()).isSolidRender(this.spirit.level(), pos.below())) {
-                    continue;
-                }
-
-                this.spirit.moveTo(
-                        pos.getX() + 0.5D,
-                        pos.getY(),
-                        pos.getZ() + 0.5D,
-                        this.spirit.getYRot(),
-                        this.spirit.getXRot()
+                this.spirit.getNavigation().moveTo(
+                        this.owner,
+                        this.speedModifier
                 );
-
-                this.spirit.getNavigation().stop();
-                return;
             }
-
-            this.spirit.moveTo(this.owner.getX(), this.owner.getY(), this.owner.getZ(), this.owner.getYRot(), 0.0F);
         }
     }
 }

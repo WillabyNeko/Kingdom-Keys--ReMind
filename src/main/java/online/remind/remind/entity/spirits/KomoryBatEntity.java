@@ -222,16 +222,10 @@ public class KomoryBatEntity extends PathfinderMob implements GeoEntity {
             this.komoryBatFeedCooldown--;
         }
 
-        // Owner logged out, changed dimension, or is no longer loaded in this level.
+        // The central follow manager handles large teleports/dimension changes.
+        // Never clear persistent summon data here just because owner and summon
+        // are temporarily in different levels.
         if (owner == null || owner.level() != this.level()) {
-            if (owner != null) {
-                GlobalDataRM ownerData = ModDataRM.getGlobal(owner);
-
-                if (ownerData != null) {
-                    clearDreamEaterData(owner, ownerData);
-                }
-            }
-
             this.discard();
             return;
         }
@@ -239,6 +233,15 @@ public class KomoryBatEntity extends PathfinderMob implements GeoEntity {
         GlobalDataRM data = ModDataRM.getGlobal(owner);
 
         if (data == null) {
+            this.discard();
+            return;
+        }
+
+        UUID registeredDreamEaterUUID = data.getDreamEaterUUID();
+
+        if (!data.hasDreamEaterSummoned()
+                || registeredDreamEaterUUID == null
+                || !this.getUUID().equals(registeredDreamEaterUUID)) {
             this.discard();
             return;
         }
@@ -733,13 +736,6 @@ public class KomoryBatEntity extends PathfinderMob implements GeoEntity {
 
     private void followOwner(Player owner) {
         double distSqr = this.distanceToSqr(owner);
-
-        if (distSqr > 400.0D) {
-            this.moveTo(owner.getX(), owner.getY() + 2.4D, owner.getZ(), owner.getYRot(), owner.getXRot());
-            this.setDeltaMovement(Vec3.ZERO);
-            this.getNavigation().stop();
-            return;
-        }
 
         if (this.getAttackAnimTicks() > 0) {
             return;

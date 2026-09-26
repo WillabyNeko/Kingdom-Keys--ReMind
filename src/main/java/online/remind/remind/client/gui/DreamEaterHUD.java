@@ -1,187 +1,81 @@
 package online.remind.remind.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import online.kingdomkeys.kingdomkeys.KingdomKeys;
 import online.kingdomkeys.kingdomkeys.client.gui.elements.HUD.HUDElement;
-import online.kingdomkeys.kingdomkeys.data.PlayerData;
-import online.kingdomkeys.kingdomkeys.util.Utils;
-import online.remind.remind.KingdomKeysReMind;
-import online.remind.remind.capabilities.GlobalDataRM;
-import online.remind.remind.capabilities.ModDataRM;
 import online.remind.remind.client.ClientUtilsRM;
-import online.remind.remind.dreameater.DreamEater;
-import online.remind.remind.dreameater.ModDreamEaters;
+import online.remind.remind.config.ModConfigs;
+import online.remind.remind.dreameater.DreamEaterSummonCooldown;
 
 public class DreamEaterHUD extends OverlayBaseRM {
 
     public static final DreamEaterHUD INSTANCE = new DreamEaterHUD();
 
+    private static final int BAR_WIDTH = 74;
+    private static final int BAR_HEIGHT = 7;
+    private static final int MAX_COOLDOWN_TICKS = 20 * 30;
+
     private DreamEaterHUD() {
         super();
     }
 
-    /*
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         super.render(guiGraphics, deltaTracker);
 
         Player player = minecraft.player;
+        if (player == null) return;
+        if (!DreamEaterSummonCooldown.isOnCooldown(player)) return;
 
-        if (player == null) {
-            return;
-        }
+        int maxCooldownTicks = ModConfigs.summonCooldown * 20;
+        int remainingTicks = DreamEaterSummonCooldown.getRemainingTicks(player);
 
-        GlobalDataRM globalData = ModDataRM.getGlobal(player);
+        if (maxCooldownTicks <= 0 || remainingTicks <= 0) return;
 
-        if (globalData == null) {
-            return;
-        }
-
-        if (!globalData.hasDreamEaterSummoned()) {
-            return;
-        }
-
-        if (globalData.getDreamEaterUUID() == null) {
-            return;
-        }
-
-        String dreamEaterRL = globalData.getDreamEaterRL();
-
-        if (dreamEaterRL == null || dreamEaterRL.isEmpty()) {
-            return;
-        }
-
-        DreamEater dreamEater = ModDreamEaters.registry.get(ResourceLocation.parse(dreamEaterRL));
-
-        if (dreamEater == null) {
-            return;
-        }
+        float progress = Math.min(1.0F, remainingTicks / (float) maxCooldownTicks);
 
         int screenWidth = minecraft.getWindow().getGuiScaledWidth();
         int screenHeight = minecraft.getWindow().getGuiScaledHeight();
 
         HUDElement element = ClientUtilsRM.DREAM_EATER_ELEMENT;
-
         element.applyTransform(guiGraphics, screenWidth, screenHeight);
-        {
-            renderDreamEater(guiGraphics, dreamEater);
-        }
+
+        renderCooldownBar(guiGraphics, progress);
+
         element.endTransform(guiGraphics);
-    }*/
+    }
 
-    private void renderDreamEater(GuiGraphics gui, DreamEater dreamEater) {
-        Player player = minecraft.player;
+    private void renderCooldownBar(GuiGraphics gui, float progress) {
+        int x = -50;
+        int y = 15;
 
-        if (player == null) {
-            return;
+        gui.fill(x, y, x + BAR_WIDTH, y + BAR_HEIGHT, 0xAA160A24);
+        gui.fill(x + 1, y + 1, x + BAR_WIDTH - 1, y + BAR_HEIGHT - 1, 0xFF2A1638);
+
+        int fillWidth = Math.round((BAR_WIDTH - 2) * progress);
+        if (fillWidth <= 0) return;
+
+        int innerX = x + 1;
+        int innerY = y + 1;
+        int innerHeight = BAR_HEIGHT - 2;
+
+        for (int i = 0; i < fillWidth; i++) {
+            float t = fillWidth <= 1 ? 0.0F : i / (float) (fillWidth - 1);
+
+            int r = (int) (255 + (177 - 255) * t);
+            int g = (int) (92 + (66 - 92) * t);
+            int b = (int) (190 + (255 - 190) * t);
+
+            int color = 0xFF000000 | (r << 16) | (g << 8) | b;
+
+            gui.fill(
+                    innerX + i,
+                    innerY,
+                    innerX + i + 1,
+                    innerY + innerHeight,
+                    color
+            );
         }
-
-        GlobalDataRM globalData = ModDataRM.getGlobal(player);
-        PlayerData playerData = PlayerData.get(player);
-
-        if (globalData == null || playerData == null) {
-            return;
-        }
-
-        if (globalData.getDreamEaterUUID() == null) {
-            return;
-        }
-
-        Entity entity = ClientUtilsRM.getEntityByUUIDClient(globalData.getDreamEaterUUID());
-
-        // Important:
-        // MeowWowEntity is not BaseDreamEaterEntity right now.
-        // It is still a LivingEntity, so use LivingEntity for the HP bar.
-        if (!(entity instanceof LivingEntity dreamEaterEntity)) {
-            return;
-        }
-
-        boolean isOrg = playerData.getAlignment() != Utils.OrgMember.NONE;
-        int variant = isOrg ? 1 : 0;
-
-        ResourceLocation skin = ResourceLocation.fromNamespaceAndPath(KingdomKeysReMind.MODID, "textures/entity/models/mobs/icons/" + dreamEater.getName() + variant + ".png");
-
-        int headWidth = 32;
-        int headHeight = 32;
-
-        PoseStack matrixStack = gui.pose();
-
-        // Face
-        matrixStack.pushPose();
-        {
-            this.blit(gui, skin, 0, 0, 0, 0, headWidth, headHeight);
-        }
-        matrixStack.popPose();
-
-        float scale = 0.5F;
-
-        // Name
-        matrixStack.pushPose();
-        {
-            matrixStack.scale(scale, scale, scale);
-            String name = Utils.translateToLocal(dreamEater.getTranslationKey());
-            drawCenteredString(gui, minecraft.font, name, 16, -10, 0xFFFFFF);
-        }
-        matrixStack.popPose();
-
-        // HP
-        float val = dreamEaterEntity.getHealth();
-        float max = dreamEaterEntity.getMaxHealth();
-
-        if (max <= 0F) {
-            return;
-        }
-
-        val = Math.max(0F, Math.min(val, max));
-
-        ResourceLocation hptexture = ResourceLocation.fromNamespaceAndPath(
-                KingdomKeys.MODID,
-                "textures/gui/hpbar.png"
-        );
-
-        matrixStack.translate(-4, 0, 1);
-
-        // Top
-        matrixStack.pushPose();
-        {
-            matrixStack.scale(scale / 3F * 2F, scale, 1);
-            this.blit(gui, hptexture, 0, 0, 0, 72, 12, 2);
-        }
-        matrixStack.popPose();
-
-        // Middle
-        matrixStack.pushPose();
-        {
-            matrixStack.translate(0, 1, 1);
-            matrixStack.scale(scale / 3F * 2F, scale * 28F, 1);
-            this.blit(gui, hptexture, 0, 0, 0, 74, 12, 1);
-        }
-        matrixStack.popPose();
-
-        // Bottom
-        matrixStack.pushPose();
-        {
-            matrixStack.translate(0, 30, 1);
-            matrixStack.scale(scale / 3F * 2F, scale, 1);
-            this.blit(gui, hptexture, 0, -30, 0, 72, 12, 2);
-        }
-        matrixStack.popPose();
-
-        // Bar
-        matrixStack.pushPose();
-        {
-            matrixStack.mulPose(Axis.ZP.rotationDegrees(180));
-            matrixStack.translate(-4, -15, 1);
-            matrixStack.scale(scale * 0.66F, (scale * 28F) * val / max, 1);
-            this.blit(gui, hptexture, 0, 0, 0, 78, 12, 1);
-        }
-        matrixStack.popPose();
     }
 }

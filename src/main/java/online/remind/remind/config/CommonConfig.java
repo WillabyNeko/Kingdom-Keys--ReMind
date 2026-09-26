@@ -26,6 +26,7 @@ public class CommonConfig {
     public ModConfigSpec.BooleanValue spiritsEnabled;
     public ModConfigSpec.DoubleValue autoLifeCD;
     public ModConfigSpec.DoubleValue xpMulti;
+    public ModConfigSpec.IntValue summonCooldown;
 
 
 
@@ -127,6 +128,10 @@ public class CommonConfig {
                 .comment("Sets the Serverside EXP Multi for Dream Eaters.")
                 .comment("Default: 1.0, Setting this to 0 WILL DISABLE DREAM EATERS LEVELING UP!")
                 .defineInRange("Dream Eater EXP Multiplier", 1.0, 0, 1000);
+        summonCooldown= builder
+                .comment("Adjusts Dream Eater summoning cooldown in seconds.")
+                .comment("Default: 15")
+                .defineInRange("Summon Cooldown in Seconds", 15,0,9999);
 
 
         builder.pop();

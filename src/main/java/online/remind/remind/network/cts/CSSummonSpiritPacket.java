@@ -514,15 +514,14 @@ public class CSSummonSpiritPacket implements CustomPacketPayload {
                     dreamEaterUUID
             );
 
-            if (owner.level() instanceof ServerLevel serverLevel) {
+            if (owner.getServer() != null) {
+                for (ServerLevel serverLevel : owner.getServer().getAllLevels()) {
+                    Entity entity = serverLevel.getEntity(dreamEaterUUID);
 
-                Entity entity =
-                        serverLevel.getEntity(
-                                dreamEaterUUID
-                        );
-
-                if (entity != null) {
-                    entity.discard();
+                    if (entity != null) {
+                        entity.discard();
+                        break;
+                    }
                 }
             }
         }

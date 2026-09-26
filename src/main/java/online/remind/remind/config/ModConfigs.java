@@ -65,6 +65,7 @@ public class ModConfigs {
         spiritsEnabled = COMMON.spiritsEnabled.get();
         autoLifeCD = COMMON.autoLifeCD.get();
         xpMulti = COMMON.xpMulti.get();
+        summonCooldown = COMMON.summonCooldown.get();
 
         // Ultima Weapon Ability Configs
         ultimaPositiveSTR = COMMON.ultimaPositiveSTR.get();
@@ -112,6 +113,7 @@ public class ModConfigs {
     public static boolean spiritsEnabled;
     public static double autoLifeCD;
     public static double xpMulti;
+    public static int summonCooldown;
     public static boolean chirithySpellFeedback;
 
     // Ultima Weapon Ability

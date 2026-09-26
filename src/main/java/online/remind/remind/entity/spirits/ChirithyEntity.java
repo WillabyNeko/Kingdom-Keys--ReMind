@@ -269,6 +269,15 @@ public class ChirithyEntity extends BaseDreamEaterEntity implements GeoEntity {
             return;
         }
 
+        UUID registeredDreamEaterUUID = data.getDreamEaterUUID();
+
+        if (!data.hasDreamEaterSummoned()
+                || registeredDreamEaterUUID == null
+                || !this.getUUID().equals(registeredDreamEaterUUID)) {
+            this.discard();
+            return;
+        }
+
         if (owner.isDeadOrDying()) {
             data.setHasDreamEaterSummoned(false);
             data.setDreamEaterUUID(null);
@@ -803,8 +812,8 @@ public class ChirithyEntity extends BaseDreamEaterEntity implements GeoEntity {
         return true;
     }
 
-	@Override
-	public InteractionResult mobInteract(Player player, InteractionHand hand) {
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
         PlayerData playerData = PlayerData.get(player);
         if(!playerData.hasFlag(ResourceLocation.fromNamespaceAndPath(KingdomKeysReMind.MODID,"chirithy_intro"))){
             if(player.isCrouching() && !player.level().isClientSide()){
@@ -820,23 +829,23 @@ public class ChirithyEntity extends BaseDreamEaterEntity implements GeoEntity {
         }
 
 
-		ItemStack heldStack = player.getItemInHand(hand);
-		int giftExp = getChirithyGiftExp(heldStack);
+        ItemStack heldStack = player.getItemInHand(hand);
+        int giftExp = getChirithyGiftExp(heldStack);
 
-		if (giftExp > 0) {
-			return giveChirithyGift(player, heldStack, giftExp);
-		}
+        if (giftExp > 0) {
+            return giveChirithyGift(player, heldStack, giftExp);
+        }
 
-		InteractionResult result = DreamEaterPetHelper.tryPetDreamEater(this, player, hand, this.getOwnerUUID(), "Chirithy");
+        InteractionResult result = DreamEaterPetHelper.tryPetDreamEater(this, player, hand, this.getOwnerUUID(), "Chirithy");
 
-		if (result != InteractionResult.PASS) {
-			return result;
-		}
+        if (result != InteractionResult.PASS) {
+            return result;
+        }
 
-		return super.mobInteract(player, hand);
-	}
+        return super.mobInteract(player, hand);
+    }
 
-	private InteractionResult giveChirithyGift(
+    private InteractionResult giveChirithyGift(
             Player player,
             ItemStack heldStack,
             int giftExp

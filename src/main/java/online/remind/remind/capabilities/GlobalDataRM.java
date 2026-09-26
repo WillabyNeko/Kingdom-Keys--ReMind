@@ -107,6 +107,7 @@ public class GlobalDataRM implements INBTSerializable<CompoundTag> {
     private boolean dreamEaterSummoned = false;
     private UUID dreamEaterUUID = new UUID(0L, 0L);
     private String dreamEaterRL = KingdomKeysReMind.MODID + ":" + StringsRM.none;
+    private int dreamEaterSummonCooldownTicks;
 
     private boolean donorGiven;
     private boolean darkMode;
@@ -1360,6 +1361,18 @@ public class GlobalDataRM implements INBTSerializable<CompoundTag> {
 
     public void setDefeatedTonberryKing(boolean defeated) {
         this.defeatedTonberryKing = defeated;
+    }
+
+    public int getDreamEaterSummonCooldownTicks() {
+        return dreamEaterSummonCooldownTicks;
+    }
+
+    public void setDreamEaterSummonCooldownTicks(int ticks) {
+        this.dreamEaterSummonCooldownTicks = Math.max(0, ticks);
+    }
+
+    public void remDreamEaterSummonCooldownTicks(int amount) {
+        this.dreamEaterSummonCooldownTicks = Math.max(0, dreamEaterSummonCooldownTicks - amount);
     }
 
 }

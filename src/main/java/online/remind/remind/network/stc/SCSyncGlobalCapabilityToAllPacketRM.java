@@ -47,6 +47,7 @@ public class SCSyncGlobalCapabilityToAllPacketRM implements CustomPacketPayload 
     public int defPanel;
     public int panelsStatus;
     public int ngpStatus;
+    public int dreamEaterSummonCooldown;
 
     public String dreamEaterRL = "";
     public String style = "";
@@ -106,6 +107,7 @@ public class SCSyncGlobalCapabilityToAllPacketRM implements CustomPacketPayload 
         this.dreamEaterSummoned = capability.hasDreamEaterSummoned();
         this.dreamEaterUUID = capability.getDreamEaterUUID();
         this.dreamEaterRL = capability.getDreamEaterRL();
+        this.dreamEaterSummonCooldown = capability.getDreamEaterSummonCooldownTicks();
 
         this.style = capability.getStyle();
         this.situationValue = capability.getSituationValue();
@@ -161,6 +163,8 @@ public class SCSyncGlobalCapabilityToAllPacketRM implements CustomPacketPayload 
             buffer.writeBoolean(false);
         }
 
+        buffer.writeInt(message.dreamEaterSummonCooldown);
+
         buffer.writeUtf(safeString(message.style), 512);
         buffer.writeDouble(message.situationValue);
         buffer.writeInt(message.styleTicks);
@@ -215,6 +219,7 @@ public class SCSyncGlobalCapabilityToAllPacketRM implements CustomPacketPayload 
         } else {
             msg.dreamEaterUUID = null;
         }
+        msg.dreamEaterSummonCooldown = buffer.readInt();
 
         msg.style = buffer.readUtf(512);
         msg.situationValue = buffer.readDouble();
@@ -296,6 +301,7 @@ public class SCSyncGlobalCapabilityToAllPacketRM implements CustomPacketPayload 
             globalData.setLearnedMagics(message.learnedMagics);
             globalData.setUnlockedDreamEaters(message.unlockedDreamEaters);
             globalData.setDreamEaterProgress(message.dreamEaterLevels, message.dreamEaterExp);
+            globalData.setDreamEaterSummonCooldownTicks(message.dreamEaterSummonCooldown);
         });
     }
 

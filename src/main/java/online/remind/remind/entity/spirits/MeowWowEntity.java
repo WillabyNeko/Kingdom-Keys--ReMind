@@ -163,7 +163,19 @@ public class MeowWowEntity extends PathfinderMob implements GeoEntity {
         return meowWow;
     }
 
-    public static void removeExistingMeowWow(ServerLevel serverLevel, UUID uuid) {
+    public static void removeExistingMeowWow(ServerLevel level, UUID ownerUUID) {
+        if (level == null || ownerUUID == null || level.getServer() == null) {
+            return;
+        }
+
+        for (ServerLevel serverLevel : level.getServer().getAllLevels()) {
+            for (Entity entity : serverLevel.getAllEntities()) {
+                if (entity instanceof MeowWowEntity meowWow
+                        && ownerUUID.equals(meowWow.getOwnerUUID())) {
+                    meowWow.discard();
+                }
+            }
+        }
     }
 
     @Override
@@ -318,19 +330,9 @@ public class MeowWowEntity extends PathfinderMob implements GeoEntity {
 
         LivingEntity ownerLiving = this.getOwnerLiving();
 
-        // Owner is offline, unloaded, or in another dimension.
-        // If we can still find the player, clear their Dream Eater data too.
+        // Large teleports/dimension changes are handled by DreamEaterFollowManager.
+        // Do not clear persistent summon data here.
         if (!(ownerLiving instanceof Player owner) || owner.level() != this.level()) {
-            if (ownerLiving instanceof Player foundOwner) {
-                GlobalDataRM data = ModDataRM.getGlobal(foundOwner);
-
-                if (data != null) {
-                    data.setHasDreamEaterSummoned(false);
-                    data.setDreamEaterUUID(null);
-                    PacketHandlerRM.syncGlobalToAllAround(foundOwner, data);
-                }
-            }
-
             this.discard();
             return;
         }
@@ -854,7 +856,7 @@ public class MeowWowEntity extends PathfinderMob implements GeoEntity {
                 1F,
                 1F
         );
-        
+
         this.setAttackAnimTicks(24);
         this.balloonCooldown = 20 * 12;
         this.castCooldown = 20 * 8;
@@ -1380,46 +1382,19 @@ public class MeowWowEntity extends PathfinderMob implements GeoEntity {
             return this.meowWow.distanceToSqr(this.owner) > this.stopDistance * this.stopDistance;
         }
 
-        public static void removeExistingMeowWow(ServerLevel level, UUID ownerUUID) {
-            if (level == null || ownerUUID == null) {
-                return;
-            }
-
-            MinecraftServer server = level.getServer();
-
-            if (server == null) {
-                return;
-            }
-
-            for (ServerLevel serverLevel : server.getAllLevels()) {
-                for (Entity entity : serverLevel.getAllEntities()) {
-
-                    if (!(entity instanceof MeowWowEntity meowWow)) {
-                        continue;
-                    }
-
-                    UUID meowWowOwner = meowWow.getOwnerUUID();
-
-                    if (ownerUUID.equals(meowWowOwner)) {
-                        meowWow.discard();
-                    }
-                }
-            }
-        }
 
         @Override
         public void tick() {
-            this.meowWow.getLookControl().setLookAt(this.owner, 10.0F, this.meowWow.getMaxHeadXRot());
+            this.meowWow.getLookControl().setLookAt(
+                    this.owner,
+                    10.0F,
+                    this.meowWow.getMaxHeadXRot()
+            );
 
-            double distanceSqr = this.meowWow.distanceToSqr(this.owner);
-
-            if (distanceSqr > 24.0D * 24.0D) {
-                this.meowWow.teleportTo(this.owner.getX(), this.owner.getY(), this.owner.getZ());
-                this.meowWow.getNavigation().stop();
-                return;
-            }
-
-            this.meowWow.getNavigation().moveTo(this.owner, this.speedModifier);
+            this.meowWow.getNavigation().moveTo(
+                    this.owner,
+                    this.speedModifier
+            );
         }
 
         @Override
