@@ -44,6 +44,9 @@ public class EpicRMModifiers {
                     .addConditionalModifier(EpicRMConditionals.CRITICAL_IMPACT_STYLE)
                     .addMovesetModifier(RMStyle.EX_SOLDIER, KKMoveSets.SORA_MOVESET)
                     .addConditionalModifier(EpicRMConditionals.EX_SOLDIER_STYLE)
+                    .addMovesetModifier(RMStyle.XEPHIRO_SINGLE, EpicRMMovesets.XEPHIRO_1HAND_MOVESET)
+                    .addConditionalModifier(EpicRMConditionals.XEPHIRO_STYLE)
+
     );
 
 }

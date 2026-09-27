@@ -40,6 +40,8 @@ public class EpicRMWeapons {
                     .setTierValues(0, 10d, 0.7, 0.3)
                     .parent(EpicKKWeapons.KEYBLADE)
                     .addTag(EpicFight.identifier("xephiro"))
+                    .addTag(EpicFight.identifier("kk_keyblade"))
+                    .addTag(EpicFight.identifier("kk_weapon"))
                     .addMoveset(RMStyle.XEPHIRO_SINGLE, EpicRMMovesets.XEPHIRO_1HAND_MOVESET)
                     .addConditionals(EpicRMConditionals.XEPHIRO_STYLE)
     );
