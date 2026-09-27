@@ -36,6 +36,9 @@ public class DreamEaterMenu extends MenuBackground {
         super(name, rgb);
     }
 
+    private int previewBoxX;
+    private int previewBoxY;
+
     private LivingEntity previewDreamEaterEntity;
     private String previewDreamEaterKey = "";
 
@@ -95,62 +98,44 @@ public class DreamEaterMenu extends MenuBackground {
         super.init();
 
         MusicManager.start();
-        this.renderables.clear();
+        this.clearWidgets();
 
-        float topBarHeight = (float) height * 0.17F;
-        int button_statsY = (int) topBarHeight + 5;
+        int topBarHeight = (int) (height * 0.17F);
+        int button_statsY = topBarHeight + 5;
 
-        float buttonPosX = (float) width * 0.03F;
-        float subButtonPosX = buttonPosX + 10;
+        int margin = 20;
+        int maxContentWidth = 760;
+        int contentWidth = Math.min(maxContentWidth, width - margin * 2);
 
-        float buttonWidth = ((float) width * 0.1744F) + 10;
-        float dataWidth = ((float) width * 0.1744F) - 10;
+        int contentLeft = (width - contentWidth) / 2;
+        int contentRight = contentLeft + contentWidth;
 
-        int col1X = (int) (subButtonPosX + buttonWidth + 40);
+        int buttonPosX = contentLeft;
+        int buttonWidth = Math.min(150, contentWidth / 4);
+
+        int gap = 25;
+
+        int statsX = buttonPosX + buttonWidth + gap;
+        int statsWidth = 100;
+
+        int previewX = statsX + 170;
+        int previewY = button_statsY + 5;
+
+        if (previewX + 130 > contentRight) {
+            previewX = contentRight - 130;
+        }
+
+        this.previewBoxX = previewX;
+        this.previewBoxY = previewY;
 
         int i = 0;
         int c = 0;
         int spacer = 14;
 
-        addRenderableWidget(changeSpirit = new MenuButton(
-                (int) buttonPosX,
-                button_statsY + 18 * i++,
-                (int) buttonWidth,
-                "Change Spirit",
-                MenuButton.ButtonType.BUTTON,
-                true,
-                e -> action("changeSpirit")
-        ));
-
-        addRenderableWidget(createSpirit = new MenuButton(
-                (int) buttonPosX,
-                button_statsY + 18 * i++,
-                (int) buttonWidth,
-                "Create Spirit",
-                MenuButton.ButtonType.BUTTON,
-                false,
-                e -> action("createSpirit")
-        ));
-
-        addRenderableWidget(abilityLinks = new MenuButton(
-                (int) buttonPosX,
-                button_statsY + 18 * i++,
-                (int) buttonWidth,
-                "Ability Links",
-                MenuButton.ButtonType.BUTTON,
-                true,
-                e -> action("abilityLinks")
-        ));
-
-        addRenderableWidget(backButton = new MenuButton(
-                (int) buttonPosX,
-                button_statsY + 18 * i++,
-                (int) buttonWidth,
-                Strings.Gui_Menu_Back,
-                MenuButton.ButtonType.BUTTON,
-                false,
-                e -> action("back")
-        ));
+        addRenderableWidget(changeSpirit = new MenuButton(buttonPosX, button_statsY + 18 * i++, buttonWidth, "Change Spirit", MenuButton.ButtonType.BUTTON, true, e -> action("changeSpirit")));
+        addRenderableWidget(createSpirit = new MenuButton(buttonPosX, button_statsY + 18 * i++, buttonWidth, "Create Spirit", MenuButton.ButtonType.BUTTON, false, e -> action("createSpirit")));
+        addRenderableWidget(abilityLinks = new MenuButton(buttonPosX, button_statsY + 18 * i++, buttonWidth, "Ability Links", MenuButton.ButtonType.BUTTON, true, e -> action("abilityLinks")));
+        addRenderableWidget(backButton = new MenuButton(buttonPosX, button_statsY + 18 * i++, buttonWidth, Strings.Gui_Menu_Back, MenuButton.ButtonType.BUTTON, false, e -> action("back")));
 
         if (minecraft == null || minecraft.player == null) {
             return;
@@ -167,85 +152,22 @@ public class DreamEaterMenu extends MenuBackground {
         String dreamEaterRL = getEquippedDreamEaterRL(global, dreamEater);
 
         if (isNoDreamEaterEquipped(dreamEaterRL, dreamEater)) {
-            addRenderableWidget(name = new MenuColourBox(
-                    col1X,
-                    button_statsY + (c++ * spacer),
-                    (int) dataWidth,
-                    "Name:",
-                    "N/A",
-                    0xffffff
-            ));
+            addRenderableWidget(name = new MenuColourBox(statsX, button_statsY + (c++ * spacer), statsWidth, "Name:", "N/A", 0xffffff));
             return;
         }
 
         DreamEaterDisplayStats stats = getDisplayStats(global, playerData, dreamEater, dreamEaterRL);
 
-        addRenderableWidget(name = new MenuColourBox(
-                col1X,
-                button_statsY + (c++ * spacer),
-                (int) dataWidth,
-                "Name:",
-                getDreamEaterDisplayName(dreamEater, dreamEaterRL),
-                0xffffff
-        ));
+        addRenderableWidget(name = new MenuColourBox(statsX, button_statsY + (c++ * spacer), statsWidth, "Name:", getDreamEaterDisplayName(dreamEater, dreamEaterRL), 0xffffff));
+        addRenderableWidget(level = new MenuColourBox(statsX, button_statsY + (c++ * spacer), statsWidth, "Level:", String.valueOf(stats.level), 0xffffff));
 
-        addRenderableWidget(level = new MenuColourBox(
-                col1X,
-                button_statsY + (c++ * spacer),
-                (int) dataWidth,
-                "Level:",
-                String.valueOf(stats.level),
-                0xffffff
-        ));
+        String expText = stats.expNeeded <= 0 ? "MAX" : stats.exp + " / " + stats.expNeeded;
 
-        String expText = stats.expNeeded <= 0
-                ? "MAX"
-                : stats.exp + " / " + stats.expNeeded;
-
-        addRenderableWidget(exp = new MenuColourBox(
-                col1X,
-                button_statsY + (c++ * spacer),
-                (int) dataWidth,
-                "EXP:",
-                expText,
-                0xAEEAFF
-        ));
-
-        addRenderableWidget(spiritHP = new MenuColourBox(
-                col1X,
-                button_statsY + (c++ * spacer),
-                (int) dataWidth,
-                "Max HP:",
-                formatStat(stats.maxHP),
-                0x31bf14
-        ));
-
-        addRenderableWidget(spiritSTR = new MenuColourBox(
-                col1X,
-                button_statsY + (c++ * spacer),
-                (int) dataWidth,
-                "STR:",
-                formatStat(stats.strength),
-                0xbf1414
-        ));
-
-        addRenderableWidget(spiritMAG = new MenuColourBox(
-                col1X,
-                button_statsY + (c++ * spacer),
-                (int) dataWidth,
-                "MAG:",
-                formatStat(stats.magic),
-                0x000088
-        ));
-
-        addRenderableWidget(spiritDEF = new MenuColourBox(
-                col1X,
-                button_statsY + (c++ * spacer),
-                (int) dataWidth,
-                "DEF:",
-                formatStat(stats.defense),
-                0xbf8d14
-        ));
+        addRenderableWidget(exp = new MenuColourBox(statsX, button_statsY + (c++ * spacer), statsWidth, "EXP:", expText, 0xAEEAFF));
+        addRenderableWidget(spiritHP = new MenuColourBox(statsX, button_statsY + (c++ * spacer), statsWidth, "Max HP:", formatStat(stats.maxHP), 0x31bf14));
+        addRenderableWidget(spiritSTR = new MenuColourBox(statsX, button_statsY + (c++ * spacer), statsWidth, "STR:", formatStat(stats.strength), 0xbf1414));
+        addRenderableWidget(spiritMAG = new MenuColourBox(statsX, button_statsY + (c++ * spacer), statsWidth, "MAG:", formatStat(stats.magic), 0x000088));
+        addRenderableWidget(spiritDEF = new MenuColourBox(statsX, button_statsY + (c++ * spacer), statsWidth, "DEF:", formatStat(stats.defense), 0xbf8d14));
     }
 
     private DreamEater getEquippedDreamEater(GlobalDataRM global) {
@@ -554,8 +476,9 @@ public class DreamEaterMenu extends MenuBackground {
         int dreamEaterExp = global.getDreamEaterExp(dreamEaterRL);
         int dreamEaterExpNeeded = global.getDreamEaterExpToNextLevel(dreamEaterRL);
 
-        int boxX = (int) (this.width * 0.45F);
-        int boxY = (int) (this.height * 0.24F);
+
+        int boxX = previewBoxX;
+        int boxY = previewBoxY;
         int boxW = 130;
         int boxH = 145;
 

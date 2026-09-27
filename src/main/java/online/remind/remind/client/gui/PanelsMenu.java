@@ -662,45 +662,28 @@ public class PanelsMenu extends MenuBackground {
 	public void init() {
 		updateAdaptivePanelLayout();
 
-		Player player;
 		final PlayerData playerData = PlayerData.get(minecraft.player);
 		GlobalDataRM addedData = ModDataRM.getGlobal(minecraft.player);
 		ticks = 0;
-
 		lastKnownHearts = playerData != null ? playerData.getHearts() : -1;
 
 		this.clearWidgets();
 
 		float topBarHeight = (float) height * 0.17F;
-		int button_statsY = (int) topBarHeight + 5;
-		int button_stats_playerY = button_statsY;
-
-		float buttonPosX = (float) width * 0.03F;
-		float subButtonPosX = buttonPosX + 10;
-
-		float buttonWidth = ((float) width * 0.1744F) - 40;
-		float subButtonWidth = buttonWidth - 10;
-
-		float dataWidth = ((float) width * 0.1744F) - 10;
-
-		int col1X = (int) (subButtonPosX + buttonWidth + 10);
-		int col2X = (int) (col1X + dataWidth * 2) + 5;
-
-		// Organization Panel Grid position
-		int margin = emergencyPanelLayout ? 8 : compactPanelLayout ? 10 : 14;
+		int topY = (int) topBarHeight + 5;
+		int outerMargin = emergencyPanelLayout ? 8 : compactPanelLayout ? 12 : 20;
 		int gap = emergencyPanelLayout ? 6 : compactPanelLayout ? 8 : 10;
-
-		int topY = button_statsY;
+		int maxLayoutWidth = 1100;
+		int layoutWidth = Math.max(1, Math.min(maxLayoutWidth, width - outerMargin * 2));
+		int layoutLeft = (width - layoutWidth) / 2;
 		int usableBottom = height - 64;
 
-		/*
-		 * Wallet-style panel boxes.
-		 * These are intentionally smaller than full screen height
-		 * so the menu doesn't feel like a giant overlay.
-		 */
-		this.shopBoxX = (int) buttonPosX;
+		int shopWidth = emergencyPanelLayout ? Math.max(110, layoutWidth / 4) : compactPanelLayout ? Math.max(130, Math.min(175, layoutWidth / 5)) : Math.max(150, Math.min(200, layoutWidth / 5));
+		if (shopWidth > layoutWidth - 240) shopWidth = Math.max(100, layoutWidth / 3);
+
+		this.shopBoxX = layoutLeft;
 		this.shopBoxY = topY;
-		this.shopBoxW = Math.max(125, (int) (width * (emergencyPanelLayout ? 0.20F : compactPanelLayout ? 0.19F : 0.18F)));
+		this.shopBoxW = shopWidth;
 		this.shopBoxH = emergencyPanelLayout ? 150 : compactPanelLayout ? 175 : 195;
 
 		this.detailBoxX = shopBoxX;
@@ -710,329 +693,110 @@ public class PanelsMenu extends MenuBackground {
 
 		this.editorBoxX = shopBoxX + shopBoxW + gap;
 		this.editorBoxY = topY;
-		this.editorBoxW = width - editorBoxX - margin;
-
-		/*
-		 * Make editor box wrap around the actual editor content instead of filling
-		 * almost the entire screen height.
-		 */
+		this.editorBoxW = Math.max(1, layoutLeft + layoutWidth - editorBoxX);
 		this.editorBoxH = emergencyPanelLayout ? 245 : compactPanelLayout ? 290 : 335;
 
-		if (editorBoxY + editorBoxH > usableBottom) {
-			editorBoxH = usableBottom - editorBoxY;
-		}
+		if (editorBoxY + editorBoxH > usableBottom) editorBoxH = Math.max(180, usableBottom - editorBoxY);
+		if (detailBoxY + detailBoxH > usableBottom) detailBoxH = Math.max(70, usableBottom - detailBoxY);
 
 		this.shopBox = new MenuBox(shopBoxX, shopBoxY, shopBoxW, shopBoxH, 1F, new Color(92, 92, 151));
 		this.detailBox = new MenuBox(detailBoxX, detailBoxY, detailBoxW, detailBoxH, 1F, new Color(255, 255, 255));
 		this.editorBox = new MenuBox(editorBoxX, editorBoxY, editorBoxW, editorBoxH, 1F, new Color(155, 155, 155));
 
-		int contentX = editorBoxX + 14;
-		int contentY = editorBoxY + 20;
-		int contentWidth = editorBoxW - 28;
-
 		int orgGridCols = 5;
-
+		int orgGridRows = 8;
 		if (addedData != null && addedData.getOrganizationPanelGrid() != null) {
 			orgGridCols = addedData.getOrganizationPanelGrid().getWidth();
+			orgGridRows = addedData.getOrganizationPanelGrid().getHeight();
 		}
+
+		int controlButtonWidth = emergencyPanelLayout ? 78 : compactPanelLayout ? 100 : 125;
+		int controlButtonGap = emergencyPanelLayout ? 15 : compactPanelLayout ? 17 : 20;
+		int editorInnerLeft = editorBoxX + 16;
+		int editorInnerRight = editorBoxX + editorBoxW - 14;
+		int editorInnerWidth = Math.max(1, editorInnerRight - editorInnerLeft);
+
+		this.orgInventoryListW = emergencyPanelLayout ? 100 : compactPanelLayout ? 125 : 150;
+		int inventoryGridGap = emergencyPanelLayout ? 8 : compactPanelLayout ? 12 : 16;
+		int gridControlsGap = emergencyPanelLayout ? 10 : compactPanelLayout ? 14 : 20;
+
+		int maxGridWidth = editorInnerWidth - orgInventoryListW - inventoryGridGap - controlButtonWidth - gridControlsGap;
+		int maxSlotSize = orgGridCols > 0 ? maxGridWidth / orgGridCols : orgSlotSize;
+		if (maxSlotSize < orgSlotSize) orgSlotSize = Math.max(7, maxSlotSize);
 
 		int gridWidth = orgGridCols * orgSlotSize;
+		int gridHeight = orgGridRows * orgSlotSize;
 
-		int pickerColumns = Math.min(ORG_PICKER_PANELS.length, orgPickerColumns);
-		int pickerRows = (int) Math.ceil((double) ORG_PICKER_PANELS.length / orgPickerColumns);
-
-		int pickerWidth = (pickerColumns * orgPickerSlotSize) + ((pickerColumns - 1) * orgPickerGap);
-
-		int pickerHeight = (pickerRows * orgPickerSlotSize) + ((pickerRows - 1) * orgPickerRowGap);
-
-		// --- Panel Inventory + Grid layout ---
-		this.orgInventoryListX = editorBoxX + 16;
+		this.orgInventoryListX = editorInnerLeft;
 		this.orgInventoryListY = editorBoxY + 28;
-		this.orgInventoryListW = emergencyPanelLayout ? 112 : compactPanelLayout ? 126 : 145;
-		this.orgInventoryListH = editorBoxH - 48;
-
-		if (this.orgInventoryListH < 90) {
-			this.orgInventoryListH = 90;
-		}
-
-		// Keep old picker coords synced so old checks do not drift.
+		this.orgInventoryListH = Math.max(90, editorBoxH - 48);
 		this.orgPickerX = orgInventoryListX;
 		this.orgPickerY = orgInventoryListY;
 
-		// Scrollbar for the Panel Inventory list.
 		this.orgInventoryScrollBar = new MenuScrollBar(orgInventoryListX + orgInventoryListW - 12, orgInventoryListY, orgInventoryListY + orgInventoryListH, orgInventoryListH, 0, false);
-
 		this.orgInventoryScrollBar.setContentHeight(ORG_PICKER_PANELS.length * ORG_INVENTORY_ROW_HEIGHT + 4);
-
 		addRenderableWidget(this.orgInventoryScrollBar);
 
-		// Grid sits to the right of the inventory list.
-		this.orgGridX = orgInventoryListX + orgInventoryListW + 20;
-		this.orgGridY = (int) topBarHeight + 24;
+		this.orgGridX = orgInventoryListX + orgInventoryListW + inventoryGridGap;
+		this.orgGridY = editorBoxY + 28;
 
+		this.orgControlsX = orgGridX + gridWidth + gridControlsGap;
+		this.orgControlsY = orgGridY + 18;
 
-		int maxGridX = editorBoxX + editorBoxW - gridWidth - 18;
+		if (orgControlsX + controlButtonWidth > editorInnerRight) orgControlsX = editorInnerRight - controlButtonWidth;
+		if (orgControlsX < orgGridX + gridWidth + 4) orgControlsX = orgGridX + gridWidth + 4;
 
-		if (this.orgGridX > maxGridX) {
-			this.orgGridX = maxGridX;
-		}
+		int controlCount = addedData != null && addedData.getUnlockedOrganizationPanelSlots() != 120 ? 6 : 5;
+		int neededControlHeight = controlCount * controlButtonGap;
+		int maxControlY = editorBoxY + editorBoxH - neededControlHeight - 8;
+		if (maxControlY < editorBoxY + 30) maxControlY = editorBoxY + 30;
+		orgControlsY = Math.max(editorBoxY + 30, Math.min(orgControlsY, maxControlY));
 
-		if (this.orgGridX < editorBoxX + 16) {
-			this.orgGridX = editorBoxX + 16;
-		}
-
-		int i = 0;
+		this.orgPanelAreaX = orgGridX;
+		this.orgPanelAreaY = orgGridY;
+		this.orgPanelAreaWidth = gridWidth;
+		this.orgPanelAreaHeight = gridHeight;
 
 		this.shopListX = shopBoxX + 8;
 		this.shopListY = shopBoxY + 22;
 		this.shopListW = shopBoxW - 16;
 		this.shopListH = shopBoxH - 32;
-
 		this.shopPanelX = detailBoxX + 8;
 		this.shopPanelWidth = detailBoxW - 16;
-
-		this.shopScrollBar = new MenuScrollBar(shopListX + shopListW - 12, shopListY, shopListY + shopListH, shopListH, 0, false);
-
-		this.shopScrollBar.setContentHeight(getPanelShopEntries().length * SHOP_ROW_HEIGHT + 4);
-
-		addRenderableWidget(this.shopScrollBar);
-
-
 		this.shopInfoBoxY = detailBoxY + 15;
 
-		gridWidth = addedData != null ? addedData.getOrganizationPanelGridWidth() * orgSlotSize : gridWidth;
+		this.shopScrollBar = new MenuScrollBar(shopListX + shopListW - 12, shopListY, shopListY + shopListH, shopListH, 0, false);
+		this.shopScrollBar.setContentHeight(getPanelShopEntries().length * SHOP_ROW_HEIGHT + 4);
+		addRenderableWidget(this.shopScrollBar);
 
-		/*
-		 * Panel controls.
-		 *
-		 * GUI Scale 3/4/Auto can leave very little vertical room. The old fallback
-		 * moved the buttons under the grid, which made them overlap the bottom HUD.
-		 * This keeps the buttons inside the editor box and tightens labels/gaps when
-		 * the scaled GUI is cramped.
-		 */
-		double currentGuiScale = minecraft != null && minecraft.getWindow() != null
-				? minecraft.getWindow().getGuiScale()
-				: 1.0D;
-
-		boolean tightControlLayout = emergencyPanelLayout
-				|| compactPanelLayout
-				|| this.height <= 720
-				|| currentGuiScale >= 4.0D;
-
-		int controlButtonWidth = emergencyPanelLayout ? 100 : tightControlLayout ? 115 : 145;
-		int controlButtonGap = emergencyPanelLayout ? 16 : tightControlLayout ? 17 : 20;
-		int controlButtonCount = 5;
-		int neededButtonHeight = controlButtonCount * controlButtonGap;
-
-		int editorRight = editorBoxX + editorBoxW;
-		int editorBottom = editorBoxY + editorBoxH;
-		int gridRows = addedData != null ? addedData.getOrganizationPanelGridHeight() : 8;
-		int gridHeight = gridRows * orgSlotSize;
-
-		int sideButtonX = orgGridX + gridWidth + 8;
-		int rightAlignedButtonX = editorRight - controlButtonWidth - 14;
-
-		int controlButtonX = sideButtonX;
-		boolean hasRoomBesideGrid = sideButtonX + controlButtonWidth <= editorRight - 12;
-
-		if (!hasRoomBesideGrid) {
-			controlButtonX = rightAlignedButtonX;
-		}
-
-		if (controlButtonX < editorBoxX + 12) {
-			controlButtonX = editorBoxX + 12;
-		}
-
-		/*
-		 * Start beside the grid. If there is no true side room, center the buttons
-		 * vertically against the grid instead of pushing them below it. Then clamp
-		 * inside the editor box so GUI Scale 4/Auto cannot overlap the bottom HUD.
-		 */
-		int controlButtonY = hasRoomBesideGrid
-				? orgGridY + 18
-				: orgGridY + Math.max(0, (gridHeight - neededButtonHeight) / 2);
-
-		int minControlButtonY = editorBoxY + 30;
-		int maxControlButtonY = editorBottom - neededButtonHeight - 8;
-
-		if (maxControlButtonY < minControlButtonY) {
-			maxControlButtonY = minControlButtonY;
-		}
-
-		controlButtonY = Math.max(minControlButtonY, Math.min(controlButtonY, maxControlButtonY));
-
+		boolean tightControlLayout = emergencyPanelLayout || compactPanelLayout || this.height <= 720 || (minecraft != null && minecraft.getWindow() != null && minecraft.getWindow().getGuiScale() >= 4.0D);
 		String slotReleaserText = tightControlLayout ? "Slot Releaser" : "Buy Slot Releaser";
-		String boostText = addedData != null && addedData.getPanelsEnabled() == 1
-				? (tightControlLayout ? "Boost OFF" : "Turn Boost OFF")
-				: (tightControlLayout ? "Boost ON" : "Turn Boost ON");
+		String boostText = addedData != null && addedData.getPanelsEnabled() == 1 ? (tightControlLayout ? "Boost OFF" : "Turn Boost OFF") : (tightControlLayout ? "Boost ON" : "Turn Boost ON");
 
+		int controlX = orgControlsX;
+		int controlY = orgControlsY;
 
-		if (!compactPanelLayout && !emergencyPanelLayout){
-			controlButtonX -= 15;
-		}
-		if (compactPanelLayout) {
+		addRenderableWidget(new MenuButton(controlX, controlY, controlButtonWidth, "Buy Selected", MenuButton.ButtonType.BUTTON, false, e -> action("buy_selected_panel")));
+		controlY += controlButtonGap;
+		addRenderableWidget(new MenuButton(controlX, controlY, controlButtonWidth, "Unequip All", MenuButton.ButtonType.BUTTON, false, e -> action("orgClear")));
+		controlY += controlButtonGap;
 
-			controlButtonX += 60;
-			controlButtonY -= 20;
-			controlButtonGap += 2;
-			controlButtonWidth -= 20;
-		}
-		if (emergencyPanelLayout){
-
-			controlButtonWidth -= 25;
-			controlButtonY += 145;
-			controlButtonX -= 245;
-			orgInventoryListX -= 10;
-			orgInventoryScrollBar.setX(orgInventoryScrollBar.getX() - 20);
-			orgGridX -= 36;
-			addRenderableWidget(new MenuButton(controlButtonX, controlButtonY, controlButtonWidth, "Buy Selected", MenuButton.ButtonType.BUTTON, false, e -> action("buy_selected_panel")));
-
-				controlButtonX += 75;
-
-			addRenderableWidget(new MenuButton(
-					controlButtonX,
-					controlButtonY,
-					controlButtonWidth,
-					"Unequip All",
-					MenuButton.ButtonType.BUTTON,
-					false,
-					e -> action("orgClear")
-			));
-
-				controlButtonX += 75;
-
-			if (addedData.getUnlockedOrganizationPanelSlots() != 120) {
-				addRenderableWidget(new MenuButton(controlButtonX, controlButtonY, controlButtonWidth, slotReleaserText, MenuButton.ButtonType.BUTTON, false, e -> action("buy_slot_releaser")));
-				controlButtonX += 75;
-			}
-
-			if (addedData != null && addedData.getPanelsEnabled() == 1) {
-				addRenderableWidget(toggleOff = new MenuButton(controlButtonX, controlButtonY, controlButtonWidth, boostText, MenuButton.ButtonType.BUTTON, false, e -> action("toggleOff")));
-			} else {
-				addRenderableWidget(toggleOn = new MenuButton(controlButtonX, controlButtonY, controlButtonWidth, boostText, MenuButton.ButtonType.BUTTON, false, e -> action("toggleOn")));
-			}
-			if (addedData.getUnlockedOrganizationPanelSlots() == 120) {
-				controlButtonX += 75;
-			} else {
-				controlButtonX -= 225;
-				controlButtonY += controlButtonGap + 5;
-			}
-
-			addRenderableWidget(rejectOrg = new MenuButton(controlButtonX, controlButtonY, controlButtonWidth, "Leave Org", MenuButton.ButtonType.BUTTON, false, e -> action("rejectOrg")));
-			controlButtonX += 75;
-			addRenderableWidget(backButton = new MenuButton(controlButtonX, controlButtonY, controlButtonWidth, Strings.Gui_Menu_Back, MenuButton.ButtonType.BUTTON, false, e -> action("back")));
-		} else  if (!emergencyPanelLayout || compactPanelLayout){
-
-			controlButtonX -= 80;
-			controlButtonY += 20;
-
-			addRenderableWidget(new MenuButton(controlButtonX, controlButtonY, controlButtonWidth, "Buy Selected", MenuButton.ButtonType.BUTTON, false, e -> action("buy_selected_panel")));
-
-			controlButtonY += controlButtonGap;
-
-			addRenderableWidget(new MenuButton(
-					controlButtonX,
-					controlButtonY,
-					controlButtonWidth,
-					"Unequip All",
-					MenuButton.ButtonType.BUTTON,
-					false,
-					e -> action("orgClear")
-			));
-
-			controlButtonY += controlButtonGap;
-			if (addedData.getUnlockedOrganizationPanelSlots() != 120) {
-				addRenderableWidget(new MenuButton(controlButtonX, controlButtonY, controlButtonWidth, slotReleaserText, MenuButton.ButtonType.BUTTON, false, e -> action("buy_slot_releaser")));
-				controlButtonY += controlButtonGap;
-			}
-
-
-			if (addedData != null && addedData.getPanelsEnabled() == 1) {
-				addRenderableWidget(toggleOff = new MenuButton(controlButtonX, controlButtonY, controlButtonWidth, boostText, MenuButton.ButtonType.BUTTON, false, e -> action("toggleOff")));
-			} else {
-				addRenderableWidget(toggleOn = new MenuButton(controlButtonX, controlButtonY, controlButtonWidth, boostText, MenuButton.ButtonType.BUTTON, false, e -> action("toggleOn")));
-			}
-
-			controlButtonY += controlButtonGap;
-
-			addRenderableWidget(rejectOrg = new MenuButton(controlButtonX, controlButtonY, controlButtonWidth, "Leave Org", MenuButton.ButtonType.BUTTON, false, e -> action("rejectOrg")));
-
-			controlButtonY += controlButtonGap;
-
-			addRenderableWidget(backButton = new MenuButton(controlButtonX, controlButtonY, controlButtonWidth, Strings.Gui_Menu_Back, MenuButton.ButtonType.BUTTON, false, e -> action("back")));
-
+		if (addedData != null && addedData.getUnlockedOrganizationPanelSlots() != 120) {
+			addRenderableWidget(new MenuButton(controlX, controlY, controlButtonWidth, slotReleaserText, MenuButton.ButtonType.BUTTON, false, e -> action("buy_slot_releaser")));
+			controlY += controlButtonGap;
 		}
 
-		// Form Leveling
-//        if (ModConfigs.driveLevelsEnabled) {
-//            if (playerData.getDriveFormLevel(Strings.Form_Valor) < 7 && playerData.getHearts() >= 5000) {
-//                addRenderableWidget(valorUp = new MenuButton((int) buttonPosX, button_statsY + 80, (int) buttonWidth, (ChatFormatting.DARK_RED + "Valor " + ChatFormatting.WHITE + "EXP Up, Cost: " + ChatFormatting.GREEN + "5000"), MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("valorUp");
-//                }));
-//            } else if (playerData.getDriveFormLevel(Strings.Form_Valor) < 7 && playerData.getHearts() < 5000) {
-//                addRenderableWidget(valorUp = new MenuButton((int) buttonPosX, button_statsY + 80, (int) buttonWidth, (ChatFormatting.DARK_RED + "Valor " + ChatFormatting.WHITE + "EXP Up, Cost: " + ChatFormatting.DARK_RED + "5000"), MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("req");
-//                }));
-//            } else if ((playerData.getDriveFormLevel(Strings.Form_Valor) == 7)) {
-//                addRenderableWidget(req0 = new MenuButton((int) buttonPosX, button_statsY + 80, (int) buttonWidth, ChatFormatting.GOLD + "☆ Valor Form MAXED ☆", MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("req");
-//                }));
-//            }
-//
-//            if (playerData.getDriveFormLevel(Strings.Form_Wisdom) < 7 && playerData.getHearts() >= 5000) {
-//                addRenderableWidget(wisdomUp = new MenuButton((int) buttonPosX, button_statsY + 100, (int) buttonWidth, (ChatFormatting.BLUE + "Wisdom " + ChatFormatting.WHITE + "EXP Up, Cost: " + ChatFormatting.GREEN + "5000"), MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("wisdomUp");
-//                }));
-//
-//            } else if (playerData.getDriveFormLevel(Strings.Form_Wisdom) < 7 && playerData.getHearts() < 5000) {
-//                addRenderableWidget(wisdomUp = new MenuButton((int) buttonPosX, button_statsY + 100, (int) buttonWidth, (ChatFormatting.BLUE + "Wisdom " + ChatFormatting.WHITE + "EXP Up, Cost: " + ChatFormatting.DARK_RED + "5000"), MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("req");
-//                }));
-//            } else if ((playerData.getDriveFormLevel(Strings.Form_Wisdom) == 7)) {
-//                addRenderableWidget(req0 = new MenuButton((int) buttonPosX, button_statsY + 100, (int) buttonWidth, ChatFormatting.GOLD + "☆ Wisdom Form MAXED ☆", MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("req");
-//                }));
-//            }
-//            if (playerData.getDriveFormLevel(Strings.Form_Limit) < 7 && playerData.getHearts() >= 5000) {
-//                addRenderableWidget(limitUp = new MenuButton((int) buttonPosX, button_statsY + 120, (int) buttonWidth, (ChatFormatting.LIGHT_PURPLE + "Limit " + ChatFormatting.WHITE + "EXP Up, Cost: " + ChatFormatting.GREEN + "5000"), MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("limitUp");
-//                }));
-//            } else if (playerData.getDriveFormLevel(Strings.Form_Limit) < 7 && playerData.getHearts() < 5000) {
-//                addRenderableWidget(limitUp = new MenuButton((int) buttonPosX, button_statsY + 120, (int) buttonWidth, (ChatFormatting.LIGHT_PURPLE + "Limit " + ChatFormatting.WHITE + "EXP Up, Cost: " + ChatFormatting.DARK_RED + "5000"), MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("req");
-//                }));
-//            } else if ((playerData.getDriveFormLevel(Strings.Form_Limit) == 7)) {
-//                addRenderableWidget(req0 = new MenuButton((int) buttonPosX, button_statsY + 120, (int) buttonWidth, ChatFormatting.GOLD + "☆ Limit Form MAXED ☆", MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("req");
-//                }));
-//            }
-//            if (playerData.getDriveFormLevel(Strings.Form_Master) < 7 && playerData.getHearts() >= 5000) {
-//                addRenderableWidget(masterUp = new MenuButton((int) buttonPosX, button_statsY + 140, (int) buttonWidth, (ChatFormatting.YELLOW + "Master " + ChatFormatting.WHITE + "EXP Up, Cost: " + ChatFormatting.GREEN + "5000"), MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("masterUp");
-//                }));
-//            } else if (playerData.getDriveFormLevel(Strings.Form_Master) < 7 && playerData.getHearts() < 5000) {
-//                addRenderableWidget(masterUp = new MenuButton((int) buttonPosX, button_statsY + 140, (int) buttonWidth, (ChatFormatting.YELLOW + "Master " + ChatFormatting.WHITE + "EXP Up, Cost: " + ChatFormatting.DARK_RED + "5000"), MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("req");
-//                }));
-//            } else if ((playerData.getDriveFormLevel(Strings.Form_Master) == 7)) {
-//                addRenderableWidget(req0 = new MenuButton((int) buttonPosX, button_statsY + 140, (int) buttonWidth, ChatFormatting.GOLD + "☆ Master Form MAXED ☆", MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("req");
-//                }));
-//            }
-//            if (playerData.getDriveFormLevel(Strings.Form_Final) < 7 && playerData.getHearts() >= 5000) {
-//                addRenderableWidget(finalUp = new MenuButton((int) buttonPosX, button_statsY + 160, (int) buttonWidth, (ChatFormatting.GRAY + "Final " + ChatFormatting.WHITE + "EXP Up, Cost: " + ChatFormatting.GREEN + "5000"), MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("finalUp");
-//                }));
-//            } else if (playerData.getDriveFormLevel(Strings.Form_Final) < 7 && playerData.getHearts() < 5000) {
-//                addRenderableWidget(finalUp = new MenuButton((int) buttonPosX, button_statsY + 160, (int) buttonWidth, (ChatFormatting.GRAY + "Final " + ChatFormatting.WHITE + "EXP Up, Cost: " + ChatFormatting.DARK_RED + "5000"), MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("req");
-//                }));
-//            } else if ((playerData.getDriveFormLevel(Strings.Form_Final) == 7)) {
-//                addRenderableWidget(req0 = new MenuButton((int) buttonPosX, button_statsY + 160, (int) buttonWidth, ChatFormatting.GOLD + "☆ Final Form MAXED ☆", MenuButton.ButtonType.BUTTON, false, (e) -> {
-//                    action("req");
-//                }));
-//            }
-//        }
+		if (addedData != null && addedData.getPanelsEnabled() == 1) {
+			addRenderableWidget(toggleOff = new MenuButton(controlX, controlY, controlButtonWidth, boostText, MenuButton.ButtonType.BUTTON, false, e -> action("toggleOff")));
+		} else {
+			addRenderableWidget(toggleOn = new MenuButton(controlX, controlY, controlButtonWidth, boostText, MenuButton.ButtonType.BUTTON, false, e -> action("toggleOn")));
+		}
+
+		controlY += controlButtonGap;
+		addRenderableWidget(rejectOrg = new MenuButton(controlX, controlY, controlButtonWidth, "Leave Org", MenuButton.ButtonType.BUTTON, false, e -> action("rejectOrg")));
+		controlY += controlButtonGap;
+		addRenderableWidget(backButton = new MenuButton(controlX, controlY, controlButtonWidth, Strings.Gui_Menu_Back, MenuButton.ButtonType.BUTTON, false, e -> action("back")));
+
 		super.init();
 	}
 
@@ -1562,21 +1326,16 @@ public class PanelsMenu extends MenuBackground {
 			}
 		}
 
-		int x = orgGridX + (gridCols * orgSlotSize) + (compactPanelLayout ? 10 : 18);
-		int y = orgGridY;
+		int x = orgControlsX;
+		int y = orgGridY - 16;
 
-		if (x + 130 >= this.width - 4) {
+		if (x < editorBoxX || x >= editorBoxX + editorBoxW) {
 			return;
 		}
-		x += 10;
-		y -= 21;
-		gui.drawString(this.font, "Panel Controls", x, y + 5, 0xFFD700, false);
-		y += 28;
 
-		gui.drawString(this.font, "Left Click: Place", x, y, 0xAAAAAA, false);
-		y -= 11;
-
-		gui.drawString(this.font, "Right Click: Remove", x, y, 0xAAAAAA, false);
+		gui.drawString(this.font, "Panel Controls", x, y, 0xFFD700, false);
+		gui.drawString(this.font, "Right Click: Remove", x, y + 14, 0xAAAAAA, false);
+		gui.drawString(this.font, "Left Click: Place", x, y + 25, 0xAAAAAA, false);
 	}
 
 	private String getPanelDescription(PanelData data) {

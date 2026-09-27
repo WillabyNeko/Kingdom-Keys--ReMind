@@ -14,6 +14,7 @@
 - **[FIX]** Tonberry should (hopefully) remove light sources it places upon death.
 - **[FIX]** Dream Eaters now respect teleports of any kind and can now join us when dimension hopping.
 - **[FIX]** Celestriad fixed from Form Boost back to Fire Boost. (When did that even happen..?)
+- **[FIX]** Various menus on different resolutions and sized screens.
 - **[CHANGE/FIX]** Light and Dark Forms no longer require Quick Run to use their growth abilities. (The abilities themselves outside of form still do however.)
 - **[CHANGE]** Added Cooldown to summoning Dream Eaters, it lasts 15 seconds. Is configurable.
 - **[CHANGE]** Added Cooldown mentioned above for if the Dream Eater dies.

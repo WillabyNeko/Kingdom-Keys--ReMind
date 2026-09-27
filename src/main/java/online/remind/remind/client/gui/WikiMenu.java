@@ -183,17 +183,27 @@ public class WikiMenu extends MenuBackground {
         this.renderables.clear();
         this.items.clear();
 
-        float topBarHeight = (float) height * 0.17F;
-        int button_statsY = (int) topBarHeight + 5;
+        int topBarHeight = (int) (height * 0.17F);
+        int button_statsY = topBarHeight + 5;
+
+        int margin = 20;
+        int maxContentWidth = 760;
+        int contentWidth = Math.min(maxContentWidth, width - margin *2);
+        int contentLeft = (width - contentWidth) / 2;
+        int contentRight = (contentLeft + contentWidth);
 
         float subButtonPosX = (float) width * 0.03F + 10;
-        float buttonWidth = ((float) width * 0.1744F) - 20;
 
-        int col1X = (int) (subButtonPosX + buttonWidth + 25);
+        int buttonWidth = Math.min(150, contentWidth) / 2;
+        int buttonPosX = contentLeft;
 
-        scrollTop = (int) topBarHeight;
+        int contentGap = 25;
+        int col1X = buttonPosX + buttonWidth + contentGap;
+        int wikiWidth = contentRight - col1X - 20;
+
+        scrollTop = topBarHeight;
         scrollBot = (int) (scrollTop + middleHeight);
-        scrollBar = new MenuScrollBar(width - 17, scrollTop, scrollBot, (int) middleHeight, 0, false);
+        scrollBar = new MenuScrollBar(width - 12, scrollTop, scrollBot, (int) middleHeight, 0, false);
 
         addRenderableWidget(scrollBar);
 
@@ -231,7 +241,7 @@ public class WikiMenu extends MenuBackground {
 
         playerData = PlayerData.get(minecraft.player);
         globalData = ModDataRM.getGlobal(minecraft.player);
-        wikiLib = new WikiLib(col1X, (int)(width*0.25));
+        wikiLib = new WikiLib(col1X, wikiWidth);
 
         //Just in case we clear them even tho they should be empty when creating the instance
         wikiLib.keybladesList.clear();

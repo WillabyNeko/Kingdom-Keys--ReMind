@@ -68,77 +68,64 @@ public class PrestigeMenu extends MenuBackground {
 
     @Override
     public void init() {
-
-        Player player;
         final PlayerData playerData = PlayerData.get(minecraft.player);
         GlobalDataRM addedData = ModDataRM.getGlobal(minecraft.player);
 
         super.init();
         this.renderables.clear();
 
-        float topBarHeight = (float) height * 0.17F;
-        int button_statsY = (int) topBarHeight + 5;
-        int button_stats_playerY = button_statsY;
+        int topBarHeight = (int) (height * 0.17F);
+        int button_statsY = topBarHeight + 5;
 
-        float buttonPosX = (float) width * 0.03F;
-        float subButtonPosX = buttonPosX + 10;
+        int margin = 20;
+        int maxContentWidth = 760;
+        int contentWidth = Math.min(maxContentWidth, width - margin * 2);
+        int contentLeft = (width - contentWidth) / 2;
 
-        float buttonWidth = ((float) width * 0.1744F)- 20;
-        float subButtonWidth = buttonWidth - 10;
+        int sidebarWidth = Math.min(150, contentWidth / 4);
+        int sidebarGap = 20;
+        int columnGap = 10;
 
+        int buttonPosX = contentLeft;
+        int buttonWidth = sidebarWidth;
 
-        float dataWidth = ((float) width * 0.1744F)-10;
+        int columnsLeft = buttonPosX + buttonWidth + sidebarGap;
+        int columnsWidth = contentWidth - buttonWidth - sidebarGap;
+        int columnWidth = (columnsWidth - columnGap) / 2;
 
-        int col1X = (int) (subButtonPosX + buttonWidth + 40), col2X=(int) (col1X + dataWidth * 2)+10 ;
+        int col1X = columnsLeft;
+        int col2X = col1X + columnWidth + columnGap;
 
-        int i = 0;
+        addRenderableWidget(backButton = new MenuButton(buttonPosX, button_statsY + 40, buttonWidth, Strings.Gui_Menu_Back, MenuButton.ButtonType.BUTTON, false, e -> action("back")));
 
-        addRenderableWidget(backButton = new MenuButton((int) buttonPosX, button_statsY + 40, (int) buttonWidth, (Strings.Gui_Menu_Back), MenuButton.ButtonType.BUTTON, false, (e) -> {
-            action("back");
-        }));
         if (playerData.getLevel() == 100) {
-            addRenderableWidget(prestige = new MenuButton((int) buttonPosX, button_statsY, (int) buttonWidth, (StringsRM.Gui_Menu_Button_PrestigeConfirm), MenuButton.ButtonType.BUTTON, true, (e) -> {
-                action("confirm");
-
-            }));
+            addRenderableWidget(prestige = new MenuButton(buttonPosX, button_statsY, buttonWidth, StringsRM.Gui_Menu_Button_PrestigeConfirm, MenuButton.ButtonType.BUTTON, true, e -> action("confirm")));
         } else {
-            addRenderableWidget(levelReq = new MenuButton((int) buttonPosX, button_statsY, (int) buttonWidth, "Levels Until NG+: " + (100 - playerData.getLevel()), MenuButton.ButtonType.BUTTON, false, (e) -> {
-                action("prestige");
-            }));
-        }
-        if(addedData.getNGPEnabled() == 1) {
-            addRenderableWidget(toggleOff = new MenuButton((int) buttonPosX, button_statsY + 20, (int) buttonWidth, ("Toggle OFF"), MenuButton.ButtonType.BUTTON, false, (e) -> {
-                action("toggleOff");
-            }));
-        } else if (addedData.getNGPEnabled() == 0){
-            addRenderableWidget(toggleOn = new MenuButton((int) buttonPosX, button_statsY + 20, (int) buttonWidth, ("Toggle ON"), MenuButton.ButtonType.BUTTON, false, (e) -> {
-                action("toggleOn");
-            }));
+            addRenderableWidget(levelReq = new MenuButton(buttonPosX, button_statsY, buttonWidth, "Levels Until NG+: " + (100 - playerData.getLevel()), MenuButton.ButtonType.BUTTON, false, e -> action("prestige")));
         }
 
+        if (addedData.getNGPEnabled() == 1) {
+            addRenderableWidget(toggleOff = new MenuButton(buttonPosX, button_statsY + 20, buttonWidth, "Toggle OFF", MenuButton.ButtonType.BUTTON, false, e -> action("toggleOff")));
+        } else if (addedData.getNGPEnabled() == 0) {
+            addRenderableWidget(toggleOn = new MenuButton(buttonPosX, button_statsY + 20, buttonWidth, "Toggle ON", MenuButton.ButtonType.BUTTON, false, e -> action("toggleOn")));
+        }
 
-        //Stats
         int c = 0;
         int d = 0;
         int spacer = 14;
 
+        addRenderableWidget(level = new MenuColourBox(col1X, button_statsY + (c++ * spacer), columnWidth, Utils.translateToLocal(Strings.Gui_Menu_Status_Level), "" + playerData.getLevel(), 0x000088));
+        addRenderableWidget(prestigeLevel = new MenuColourBox(col1X, button_statsY + (c++ * spacer), columnWidth, Utils.translateToLocal(StringsRM.Gui_Menu_Button_PrestigeLevel), "" + addedData.getPrestigeLvl(), 0xe3ce44));
+        addRenderableWidget(currentPath = new MenuColourBox(col1X, button_statsY + (c++ * spacer), columnWidth, Utils.translateToLocal("Current Path: "), "" + playerData.getChosen(), 0xe3ce44));
+        addRenderableWidget(warriorPath = new MenuColourBox(col1X, button_statsY + (c++ * spacer), columnWidth, Utils.translateToLocal("NG+ 🗡 Count: "), "" + addedData.getNGPWarriorCount(), 0xe3ce44));
+        addRenderableWidget(mysticPath = new MenuColourBox(col1X, button_statsY + (c++ * spacer), columnWidth, Utils.translateToLocal("NG+ ⚚ Count: "), "" + addedData.getNGPMysticCount(), 0xe3ce44));
+        addRenderableWidget(guardianPath = new MenuColourBox(col1X, button_statsY + (c++ * spacer), columnWidth, Utils.translateToLocal("NG+ 🛡 Count: "), "" + addedData.getNGPGuardianCount(), 0xe3ce44));
 
-        // Levels
-        addRenderableWidget(level = new MenuColourBox(col1X, button_statsY + (c++* spacer), (int) dataWidth*2, Utils.translateToLocal(Strings.Gui_Menu_Status_Level),"" + playerData.getLevel(), 0x000088));
-        addRenderableWidget(prestigeLevel = new MenuColourBox(col1X, button_statsY + (c++* spacer), (int) dataWidth*2, Utils.translateToLocal(StringsRM.Gui_Menu_Button_PrestigeLevel),"" + addedData.getPrestigeLvl(), 0xe3ce44));
-        addRenderableWidget(currentPath = new MenuColourBox(col1X, button_statsY + (c++* spacer), (int) dataWidth*2, Utils.translateToLocal("Current Path: "),"" + playerData.getChosen(), 0xe3ce44));
-        addRenderableWidget(warriorPath = new MenuColourBox(col1X, button_statsY + (c++* spacer), (int) dataWidth*2, Utils.translateToLocal("NG+ \uD83D\uDDE1 Count: "),"" + addedData.getNGPWarriorCount(), 0xe3ce44));
-        addRenderableWidget(mysticPath = new MenuColourBox(col1X, button_statsY + (c++* spacer), (int) dataWidth*2, Utils.translateToLocal("NG+ ⚚ Count: "),"" + addedData.getNGPMysticCount(), 0xe3ce44));
-        addRenderableWidget(guardianPath = new MenuColourBox(col1X, button_statsY + (c++* spacer), (int) dataWidth*2, Utils.translateToLocal("NG+ \uD83D\uDEE1 Count: "),"" + addedData.getNGPGuardianCount(), 0xe3ce44));
-
-        // Stats Column
-        addRenderableWidget(gainedHP = new MenuColourBox(col2X, button_statsY + (d++* spacer), (int) dataWidth*2, Utils.translateToLocal("Gained Max HP: "), "" + addedData.getPrestigeLvl() * 2 + " / " + ChatFormatting.GOLD + ModConfigs.hpCap, 0x3ECE44));
-        addRenderableWidget(gainedMP = new MenuColourBox(col2X, button_statsY + (d++* spacer), (int) dataWidth*2, Utils.translateToLocal("Gained Max MP: "), "" + addedData.getPrestigeLvl() * 2 + " / " + ChatFormatting.GOLD + ModConfigs.mpCap, 0x3ECE44));
-
-
-        addRenderableWidget(gainedSTR = new MenuColourBox(col2X, button_statsY + (d++* spacer), (int) dataWidth*2, Utils.translateToLocal("Gained STR: "), "" + addedData.getSTRBonus() + " / "+ ChatFormatting.GOLD + ModConfigs.statCap, 0xaa190f));
-        addRenderableWidget(gainedMAG = new MenuColourBox(col2X, button_statsY + (d++* spacer), (int) dataWidth*2, Utils.translateToLocal("Gained MAG: "), "" + addedData.getMAGBonus() + " / "+ ChatFormatting.GOLD + ModConfigs.statCap, 0xaa190f));
-        addRenderableWidget(gainedDEF = new MenuColourBox(col2X, button_statsY + (d++* spacer), (int) dataWidth*2, Utils.translateToLocal("Gained DEF: "), "" + addedData.getDEFBonus() + " / "+ ChatFormatting.GOLD + ModConfigs.statCap, 0xaa190f));
+        addRenderableWidget(gainedHP = new MenuColourBox(col2X, button_statsY + (d++ * spacer), columnWidth, Utils.translateToLocal("Gained Max HP: "), "" + addedData.getPrestigeLvl() * 2 + " / " + ChatFormatting.GOLD + ModConfigs.hpCap, 0x3ECE44));
+        addRenderableWidget(gainedMP = new MenuColourBox(col2X, button_statsY + (d++ * spacer), columnWidth, Utils.translateToLocal("Gained Max MP: "), "" + addedData.getPrestigeLvl() * 2 + " / " + ChatFormatting.GOLD + ModConfigs.mpCap, 0x3ECE44));
+        addRenderableWidget(gainedSTR = new MenuColourBox(col2X, button_statsY + (d++ * spacer), columnWidth, Utils.translateToLocal("Gained STR: "), "" + addedData.getSTRBonus() + " / " + ChatFormatting.GOLD + ModConfigs.statCap, 0xaa190f));
+        addRenderableWidget(gainedMAG = new MenuColourBox(col2X, button_statsY + (d++ * spacer), columnWidth, Utils.translateToLocal("Gained MAG: "), "" + addedData.getMAGBonus() + " / " + ChatFormatting.GOLD + ModConfigs.statCap, 0xaa190f));
+        addRenderableWidget(gainedDEF = new MenuColourBox(col2X, button_statsY + (d++ * spacer), columnWidth, Utils.translateToLocal("Gained DEF: "), "" + addedData.getDEFBonus() + " / " + ChatFormatting.GOLD + ModConfigs.statCap, 0xaa190f));
     }
 
 
