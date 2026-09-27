@@ -27,10 +27,7 @@ import online.remind.remind.client.render.reactioncommand.DarkMineEntityRenderer
 import online.remind.remind.client.render.reactioncommand.LightBeamEntityRenderer;
 import online.remind.remind.client.render.shotlock.BioShotEntityRenderer;
 import online.remind.remind.entity.attacks.*;
-import online.remind.remind.entity.enemies.BombEntity;
-import online.remind.remind.entity.enemies.CactuarEntity;
-import online.remind.remind.entity.enemies.TonberryEntity;
-import online.remind.remind.entity.enemies.TonberryKingEntity;
+import online.remind.remind.entity.enemies.*;
 import online.remind.remind.entity.limits.firagaPillarEntity;
 import online.remind.remind.entity.magic.*;
 import online.remind.remind.entity.projectile.CactuarNeedleProjectile;
@@ -301,6 +298,55 @@ public class ModEntitiesRM {
                             .build("volcano")
             );
 
+    public static final Supplier<EntityType<FlanEntity>> TYPE_FIRE_FLAN =
+            createEntityType((type, level) -> {
+                FlanEntity flan = new FlanEntity(type, level);
+                flan.setVariant(FlanEntity.VARIANT_FIRE);
+                return flan;
+            }, MobCategory.MONSTER, "fire_flan", 3.0F, 3.0F);
+
+    public static final Supplier<EntityType<FlanEntity>> TYPE_ICE_FLAN =
+            createEntityType((type, level) -> {
+                FlanEntity flan = new FlanEntity(type, level);
+                flan.setVariant(FlanEntity.VARIANT_ICE);
+                return flan;
+            }, MobCategory.MONSTER, "ice_flan", 3.0F, 3.0F);
+
+    public static final Supplier<EntityType<FlanEntity>> TYPE_THUNDER_FLAN =
+            createEntityType((type, level) -> {
+                FlanEntity flan = new FlanEntity(type, level);
+                flan.setVariant(FlanEntity.VARIANT_THUNDER);
+                return flan;
+            }, MobCategory.MONSTER, "thunder_flan", 3.0F, 3.0F);
+
+    public static final Supplier<EntityType<FlanEntity>> TYPE_WIND_FLAN =
+            createEntityType((type, level) -> {
+                FlanEntity flan = new FlanEntity(type, level);
+                flan.setVariant(FlanEntity.VARIANT_WIND);
+                return flan;
+            }, MobCategory.MONSTER, "wind_flan", 3.0F, 3.0F);
+
+    public static final Supplier<EntityType<FlanEntity>> TYPE_WATER_FLAN =
+            createEntityType((type, level) -> {
+                FlanEntity flan = new FlanEntity(type, level);
+                flan.setVariant(FlanEntity.VARIANT_WATER);
+                return flan;
+            }, MobCategory.MONSTER, "water_flan", 3.0F, 3.0F);
+
+    public static final Supplier<EntityType<FlanEntity>> TYPE_LIGHT_FLAN =
+            createEntityType((type, level) -> {
+                FlanEntity flan = new FlanEntity(type, level);
+                flan.setVariant(FlanEntity.VARIANT_LIGHT);
+                return flan;
+            }, MobCategory.MONSTER, "light_flan", 3.0F, 3.0F);
+
+    public static final Supplier<EntityType<FlanEntity>> TYPE_DARK_FLAN =
+            createEntityType((type, level) -> {
+                FlanEntity flan = new FlanEntity(type, level);
+                flan.setVariant(FlanEntity.VARIANT_DARK);
+                return flan;
+            }, MobCategory.MONSTER, "dark_flan", 3.0F, 3.0F);
+
 
 
     public static final Supplier<Item> CHIRITHY_EGG = ITEMS.register("chirithy_spawn_egg", () -> new DeferredSpawnEggItem(TYPE_CHIRITHY, 0xAAAAFF, 0xFF00FF, PROPERTIES));
@@ -426,6 +472,14 @@ public class ModEntitiesRM {
         event.registerEntityRenderer(TYPE_GRENADE.get(), BombRenderer::new);
         event.registerEntityRenderer(TYPE_VOLCANO.get(), BombRenderer::new);
 
+        event.registerEntityRenderer(TYPE_FIRE_FLAN.get(), FlanRenderer::new);
+        event.registerEntityRenderer(TYPE_ICE_FLAN.get(), FlanRenderer::new);
+        event.registerEntityRenderer(TYPE_THUNDER_FLAN.get(), FlanRenderer::new);
+        event.registerEntityRenderer(TYPE_WIND_FLAN.get(), FlanRenderer::new);
+        event.registerEntityRenderer(TYPE_WATER_FLAN.get(), FlanRenderer::new);
+        event.registerEntityRenderer(TYPE_LIGHT_FLAN.get(), FlanRenderer::new);
+        event.registerEntityRenderer(TYPE_DARK_FLAN.get(), FlanRenderer::new);
+
 
     }
 
@@ -446,6 +500,14 @@ public class ModEntitiesRM {
         event.put(TYPE_BOMB.get(), BombEntity.createBombAttributes().build());
         event.put(TYPE_GRENADE.get(), BombEntity.createGrenadeAttributes().build());
         event.put(TYPE_VOLCANO.get(), BombEntity.createVolcanoAttributes().build());
+
+        event.put(TYPE_FIRE_FLAN.get(), FlanEntity.createAttributes().build());
+        event.put(TYPE_ICE_FLAN.get(), FlanEntity.createAttributes().build());
+        event.put(TYPE_THUNDER_FLAN.get(), FlanEntity.createAttributes().build());
+        event.put(TYPE_WIND_FLAN.get(), FlanEntity.createAttributes().build());
+        event.put(TYPE_WATER_FLAN.get(), FlanEntity.createAttributes().build());
+        event.put(TYPE_LIGHT_FLAN.get(), FlanEntity.createAttributes().build());
+        event.put(TYPE_DARK_FLAN.get(), FlanEntity.createAttributes().build());
     }
 
 
