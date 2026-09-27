@@ -82,11 +82,16 @@ After the countdown reaches Zero on the afflicted target... they die.
 - Dark Edge: Quick Blitz + Blackout, Sliding Dash + Blackout
 - Binding Strike: Quick Blitz + Bind
 
-## New Spell
+## New Spells
 ### **Recall** - *Re:Mind Original*
 - Cost: ALL MP
 - Teleports you to your respawn point.
 - Meld Recipe: Warp + Curaga
+
+### Flare
+- Cost: 100 MP
+- Creates a burst of Non-Elemental Damage
+- Meld Recipe: Firaga Burst + Firaga Burst
 
 ## New Attacks
 ### Poison Edge

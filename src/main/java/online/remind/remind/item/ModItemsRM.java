@@ -51,6 +51,7 @@ public class ModItemsRM{
         regenSpell = ITEMS.register("regen_spell", () -> new RMMagicSpellItem(new Item.Properties(), ModMagicsRM.REGEN.location())),
         stealSpell = ITEMS.register("steal_spell", () -> new RMMagicSpellItem(new Item.Properties(), ModMagicsRM.STEAL.location())),
         confuseSpell = ITEMS.register("confuse_spell", () -> new RMMagicSpellItem(new Item.Properties(), ModMagicsRM.CONFUSE.location())),
+        flareSpell = ITEMS.register("flare_spell", () -> new RMMagicSpellItem(new Item.Properties(), ModMagicsRM.FLARE.location())),
         zettaflareSpell = ITEMS.register("zettaflare_spell", () -> new RMMagicSpellItem(new Item.Properties(), ModMagicsRM.ZETTAFLARE.location())),
         recallSpell = ITEMS.register("recall_spell", () -> new RMMagicSpellItem(new Item.Properties(), ModMagicsRM.RECALL.location())),
 

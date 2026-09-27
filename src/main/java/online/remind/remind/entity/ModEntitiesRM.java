@@ -59,6 +59,7 @@ public class ModEntitiesRM {
     public static final Supplier<EntityType<SilenceEntity>> TYPE_SILENCE = createEntityType(SilenceEntity::new, MobCategory.MISC,"entity_silence", 0.5F, 0.5F);
     public static final Supplier<EntityType<FaithEntity>> TYPE_FAITH = createEntityType(FaithEntity::new, MobCategory.MISC,"entity_faith", 1.5F, 1.5F);
     public static final Supplier<EntityType<MeteorEntity>> TYPE_METEOR = createEntityType(MeteorEntity::new, MobCategory.MISC,"entity_meteor", 1.5F, 1.5F);
+    public static final Supplier<EntityType<FlareEntity>> TYPE_FLARE = createEntityType(FlareEntity::new, MobCategory.MISC,"entity_flare", 1.5F, 1.5F);
     public static final DeferredHolder<EntityType<?>, EntityType<ZettaflareBeamEntity>> TYPE_ZETTAFLARE_BEAM = ENTITIES.register("entity_zettaflare_beam", () -> EntityType.Builder.<ZettaflareBeamEntity>of(ZettaflareBeamEntity::new, MobCategory.MISC).sized(0.25F, 0.25F).clientTrackingRange(64).updateInterval(1).build("entity_zettaflare_beam"));
 
 
@@ -350,6 +351,7 @@ public class ModEntitiesRM {
         event.registerEntityRenderer(TYPE_SILENCE.get(),InvisibleEntityRenderer::new);
         event.registerEntityRenderer(TYPE_FAITH.get(),InvisibleEntityRenderer::new);
         event.registerEntityRenderer(TYPE_METEOR.get(),InvisibleEntityRenderer::new);
+        event.registerEntityRenderer(TYPE_FLARE.get(),InvisibleEntityRenderer::new);
 
         event.registerEntityRenderer(TYPE_QUICK_BLITZ.get(),InvisibleEntityRenderer::new);
         event.registerEntityRenderer(TYPE_BLITZ.get(),InvisibleEntityRenderer::new);

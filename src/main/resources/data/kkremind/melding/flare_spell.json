@@ -1,0 +1,11 @@
+{
+  "cost": 25000,
+  "ingredient1": "kingdomkeys:spellfiragaburst",
+  "ingredient2": "kingdomkeys:spellfiragaburst",
+  "output": {
+    "type": "item",
+    "item": "kkremind:flare_spell",
+    "quantity": 1
+  },
+  "tier": 7
+}
