@@ -32,6 +32,7 @@
 - **[EFM]**, **[CHANGE]** Blizzard Edge, Water Edge, and Dark Edge now use a jumping attack animation.
 - **[REWORK]** Light Step Rework - It now makes you move in an arcing motion
 - **[REWORK]** Dark Step Rework - It now makes you -blink- a few blocks in the direction you're facing, leaving an afterimage.
+- **[REWORK]** Panels are now split into 4 menus to make it less overwhelming.
 
 ## Monster Adjustment
 ### Cactuar
