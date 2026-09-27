@@ -90,7 +90,7 @@ After the countdown reaches Zero on the afflicted target... they die.
 
 ### Flare
 - Cost: 100 MP
-- Creates a burst of Non-Elemental Damage
+- Creates a burst of Non-Elemental Damage where you aim.
 - Meld Recipe: Firaga Burst + Firaga Burst
 
 ## New Attacks
