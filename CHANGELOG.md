@@ -158,6 +158,14 @@ Where do they spawn?
 - Bombs, near lava in the Overworld and anywhere in the Nether.
 - Grenades and Volcanos, **ONLY** in the Nether.
 
+### Flans
+There are 1 for each KK Element! *(Fire, Blizzard, Thunder, Aero, Water, Light, and Dark)*
+
+They take absorb their respective element, and take extra damage from their opposing element. 
+Whilst taking reduced damage from other sources. 
+
+Magic will be your best friend against them.
+
 ## New Keyblades
 ### Commission/Gift Keyblades
 
