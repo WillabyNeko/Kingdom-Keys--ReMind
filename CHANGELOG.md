@@ -161,10 +161,10 @@ Where do they spawn?
 ### Flans *from the FINAL FANTASY series.*
 There are 1 for each KK Element! *(Fire, Blizzard, Thunder, Aero, Water, Light, and Dark)*
 
-They take absorb their respective element, and take extra damage from their opposing element. 
+They absorb their respective element, and take extra damage from their opposing element. 
 Whilst taking reduced damage from other sources. 
 
-Magic will be your best friend against them.
+Magic will be your best friend against them. Best to avoid them early game.
 
 ## New Keyblades
 ### Commission/Gift Keyblades
