@@ -158,7 +158,7 @@ Where do they spawn?
 - Bombs, near lava in the Overworld and anywhere in the Nether.
 - Grenades and Volcanos, **ONLY** in the Nether.
 
-### Flans
+### Flans *from the FINAL FANTASY series.*
 There are 1 for each KK Element! *(Fire, Blizzard, Thunder, Aero, Water, Light, and Dark)*
 
 They take absorb their respective element, and take extra damage from their opposing element. 
