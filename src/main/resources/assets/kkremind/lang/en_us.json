@@ -607,6 +607,14 @@
   "entity.kkremind.grenade": "Grenade",
   "entity.kkremind.volcano": "Volcano",
 
+  "entity.kkremind.fire_flan": "Fire Flan",
+  "entity.kkremind.ice_flan": "Ice Flan",
+  "entity.kkremind.thunder_flan": "Thunder Flan",
+  "entity.kkremind.wind_flan": "Wind Flan",
+  "entity.kkremind.water_flan": "Water Flan",
+  "entity.kkremind.light_flan": "Light Flan",
+  "entity.kkremind.dark_flan": "Dark Flan",
+
   "effect.kkremind.haste_rm": "Haste (Re:Mind)",
   "effect.kkremind.haste_rm.1": "Hastera",
   "effect.kkremind.haste_rm.2": "Hastega",

@@ -1,0 +1,16 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": [
+    "minecraft:cherry_grove",
+    "minecraft:flower_forest",
+    "minecraft:meadow",
+    "minecraft:sunflower_plains",
+    "minecraft:lush_caves"
+  ],
+  "spawners": {
+    "type": "kkremind:light_flan",
+    "weight": 5,
+    "minCount": 1,
+    "maxCount": 1
+  }
+}

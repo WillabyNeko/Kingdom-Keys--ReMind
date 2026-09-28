@@ -6,10 +6,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -22,6 +19,8 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import online.kingdomkeys.kingdomkeys.damagesource.KKDamageTypes;
 import online.kingdomkeys.kingdomkeys.data.GlobalData;
 import online.kingdomkeys.kingdomkeys.magic.Magic;
@@ -135,6 +134,10 @@ public class FlanEntity extends Monster implements GeoEntity {
 
     public boolean isDarkFlan() {
         return getVariant() == VARIANT_DARK;
+    }
+
+    private boolean isPhysicalDamage(DamageSource source) {
+        return source.getEntity() instanceof Player;
     }
 
     public String getVariantName() {
@@ -436,7 +439,11 @@ public class FlanEntity extends Monster implements GeoEntity {
             return super.hurt(source, amount);
         }
 
-        return super.hurt(source, amount * 0.25F);
+        if (isPhysicalDamage(source)) {
+            return super.hurt(source, amount * 0.05F);
+        }
+
+        return super.hurt(source, amount * 0.05F);
     }
 
     private boolean isOwnElementDamage(DamageSource source) {
@@ -552,5 +559,7 @@ public class FlanEntity extends Monster implements GeoEntity {
                 attackCooldown = 24;
             }
         }
+
+
     }
 }
