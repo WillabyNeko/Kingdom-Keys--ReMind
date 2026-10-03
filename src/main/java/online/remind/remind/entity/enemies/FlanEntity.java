@@ -551,7 +551,7 @@ public class FlanEntity extends Monster implements GeoEntity {
                 hopCooldown = 14 + flan.getRandom().nextInt(7);
             }
 
-            double attackReach = flan.getBbWidth() * 1.5D + target.getBbWidth();
+            double attackReach = flan.getBbWidth() * 0.5D + target.getBbWidth();
 
             if (attackCooldown <= 0 && flan.distanceToSqr(target) <= attackReach * attackReach) {
                 flan.startAttackAnimation();
@@ -559,7 +559,5 @@ public class FlanEntity extends Monster implements GeoEntity {
                 attackCooldown = 24;
             }
         }
-
-
     }
 }
