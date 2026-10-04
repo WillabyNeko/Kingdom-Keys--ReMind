@@ -1,0 +1,8 @@
+{
+  "target": "kkremind:magic_faith",
+
+  "elements": ["LIGHT", "MAGIC"],
+  "specific_styles": [],
+
+  "base_value": 20
+}
