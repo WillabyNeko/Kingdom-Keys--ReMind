@@ -1,58 +1,60 @@
 {
-  "parent": "forge:item/default",
-  "loader": "neoforge:obj",
-  "flip_v" : "true",
-  "model": "kkremind:models/item/keyblade/custom/lyric_2025_tournament.obj",
+  "parent": "neoforge:item/default",
+  "loader": "neoforge:separate_transforms",
   "textures": {
 
   },
-  "display": {
-    "firstperson_righthand": {
-      "rotation": [0.0, 0.0, 0.0 ],
-      "translation": [15, 15, 15 ],
-      "scale": [2.25, 2.25, 2.25]
+  "base":	{
+    "parent": "neoforge:item/default",
+    "loader": "neoforge:obj",
+    "flip_v": "true",
+    "model": "kkremind:models/item/keyblade/custom/lyric_2025_tournament.obj",
+    "textures": {
+      "layer0": "kkremind:textures/item/keyblades/lyric_2025_tournament1"
     },
-    "thirdperson_righthand": {
-      "rotation": [0.0, 0.0, 0.0 ],
-      "translation": [17.25, 19, 17.75 ],
-      "scale": [2.25, 2.25, 2.25]
-    },
-    "firstperson_lefthand": {
-      "rotation": [0.0, 0, 0.0 ],
-      "translation": [-17.25, 19, -17.75 ],
-      "scale": [2.25, 2.25, 2.25]
-    },
-    "thirdperson_lefthand": {
-      "rotation": [0.0, 0.0, 0.0 ],
-      "translation": [-17.25, 19, -17.75 ],
-      "scale": [2.25, 2.25, 2.25]
-    },
-    "gui": {
-      "rotation": [0, 90.0, 0 ],
-      "translation": [10, 10, 10 ],
-      "scale": [1.25, 1.25, 1.25]
-    },
-    "ground": {
-      "rotation": [0, 90.0, 45.0 ],
-      "translation": [17.25, 19, 17.75 ],
-      "scale": [2, 2, 2]
-    },
-    "fixed": {
-      "rotation": [0.0, 0.0, 0.0 ],
-      "translation": [17.25, 19, 17.75 ],
-      "scale": [2, 2, 2]
-    }
-  },
-  "visibility": {
-    "object_1": "hide",
-    "object_2": "default",
-    "object_3": "show"
+	"display": {
+		"firstperson_righthand": {
+			"rotation": [0.0, 0.0, 0.0 ],
+			"translation": [15.0, 15.0, 15.0 ],
+			"scale": [2.25, 2.25, 2.25]
+		},
+		"thirdperson_righthand": {
+			"rotation": [0.0, 0.0, 0.0 ],
+			"translation": [17.25, 19.0, 17.75 ],
+			"scale": [2.25, 2.25, 2.25]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0.0, 0.0, 0.0 ],
+			"translation": [-17.25, 19.0, -17.75 ],
+			"scale": [2.25, 2.25, 2.25]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [0.0, 0.0, 0.0 ],
+			"translation": [-17.25, 19.0, -17.75 ],
+			"scale": [2.25, 2.25, 2.25]
+		},
+		"gui": {
+			"rotation": [0.0, 90.0, 0.0 ],
+			"translation": [10.0, 10.0, 10.0 ],
+			"scale": [1.25, 1.25, 1.25]
+		},
+		"ground": {
+			"rotation": [0.0, 90.0, 45.0 ],
+			"translation": [17.25, 19.0, 17.75 ],
+			"scale": [2.0, 2.0, 2.0]
+		},
+		"fixed": {
+			"rotation": [0.0, 0.0, 0.0 ],
+			"translation": [17.25, 19.0, 17.75 ],
+			"scale": [2.0, 2.0, 2.0]
+		}
+	}
   },
   "perspectives": {
     "gui": {
       "parent": "item/generated",
       "textures": {
-        "layer0": "kkremind:textures/item/keyblades/blitzers_dream"
+        "layer0": "kkremind:item/keyblades/lyric_2025_tournament1_gui"
       }
     }
   }

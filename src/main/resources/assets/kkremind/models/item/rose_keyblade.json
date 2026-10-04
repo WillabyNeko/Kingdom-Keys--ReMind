@@ -52,6 +52,11 @@
   }
 ,
   "perspectives": {
-
+    "gui": {
+      "parent": "item/generated",
+      "textures": {
+        "layer0": "kkremind:item/keyblades/rose_keyblade_gui"
+      }
     }
+  }
 }
