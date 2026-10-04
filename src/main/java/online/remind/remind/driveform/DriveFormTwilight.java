@@ -42,7 +42,7 @@ public class DriveFormTwilight extends DriveForm {
 				if (event.getSource().getEntity() instanceof Player player) {
 					PlayerData playerData = PlayerData.get(player);
 					if (playerData != null && playerData.isFormActive(ModDriveFormsRM.TWILIGHT)) {
-						double mult = Double.parseDouble(ModConfigs.SERVER.driveFormXPMultiplier.get().get(1).split(",")[1]);
+						double mult = 2;
 						playerData.setDriveFormExp(player, playerData.getActiveDriveForm(), (int) (playerData.getDriveFormExp(playerData.getActiveDriveForm()) + (5 * mult)));
 						PacketHandler.sendTo(new SCSyncPlayerData(player), (ServerPlayer) player);
 					}

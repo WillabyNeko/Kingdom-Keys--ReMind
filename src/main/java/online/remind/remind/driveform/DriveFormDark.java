@@ -38,7 +38,7 @@ public class DriveFormDark extends DriveForm {
                 GlobalDataRM formData = ModDataRM.getGlobal(player);
 
                 if (playerData != null && playerData.isFormActive(ModDriveFormsRM.DARK)) {
-                    double mult = Double.parseDouble(ModConfigs.SERVER.driveFormXPMultiplier.get().get(2).split(",")[1]);
+                    double mult = 1;
                     //double mult = 1;
                     playerData.setDriveFormExp(player, playerData.getActiveDriveForm(), (int) (playerData.getDriveFormExp(playerData.getActiveDriveForm()) + (1 * mult)));
 
