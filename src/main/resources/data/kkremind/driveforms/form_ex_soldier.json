@@ -8,7 +8,7 @@
   "speed_mult": 1,
   "level_up":[ 0, 150, 300, 450, 600, 750, 900 ],
   "abilities": [
-    "kkremind:ability_situation_boost","kkremind:ability_situation_boost","kkremind:ability_attack_haste","kingdomkeys:ability_critical_boost","kingdomkeys:ability_critical_boost","kingdomkeys:ability_critical_boost","kingdomkeys:ability_damage_control","kingdomkeys:ability_damage_control","kingdomkeys:ability_once_more","kingdomkeys:ability_second_chance","kingdomkeys:ability_form_boost","kingdomkeys:ability_form_boost","kingdomkeys:ability_form_boost","kingdomkeys:ability_form_boost"
+    "kkremind:ability_situation_boost","kkremind:ability_situation_boost","kkremind:ability_attack_haste","kingdomkeys:ability_magic_lock_on","kingdomkeys:ability_critical_boost","kingdomkeys:ability_critical_boost","kingdomkeys:ability_damage_control","kingdomkeys:ability_damage_control","kingdomkeys:ability_once_more","kingdomkeys:ability_second_chance","kingdomkeys:ability_form_boost","kingdomkeys:ability_form_boost","kingdomkeys:ability_form_boost","kingdomkeys:ability_form_boost"
   ],
   "base_levelup_abilities":[ "", "", "", "", "", "", "" ],
   "driveform_levelup_abilities":[ "", "", "", "","","","" ]

@@ -1,4 +1,4 @@
-## __10.26.1a - Hotfix__
+## __10.26.2__
 *(Month.Year.Iteration)*
 
-- **HOTFIX** Certain forms crashing when killing enemies.
+- 
