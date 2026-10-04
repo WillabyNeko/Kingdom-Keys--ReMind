@@ -52,7 +52,12 @@
   }
 ,
   "perspectives": {
-
+    "gui": {
+      "parent": "item/generated",
+      "textures": {
+        "layer0": "kkremind:item/keyblades/entropys_requiem_gui"
+      }
+    }
   }
 
 }
