@@ -6,7 +6,8 @@
   "plugin": "online.remind.remind.mixin.KKRMMixinPlugin",
   "mixins": [
     "GuardSkillMixin",
-    "KKDriveFormMixin"
+    "KKDriveFormMixin",
+    "PartyAllyGoalsMixin"
   ],
   "client": [],
   "minVersion": "0.8"

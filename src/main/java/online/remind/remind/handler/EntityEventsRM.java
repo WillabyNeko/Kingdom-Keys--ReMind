@@ -2722,33 +2722,59 @@ public class EntityEventsRM {
 				FormMagicOverride.hasSavedLoadout(player);
 
 
-		// ---------------------------------------------------------
-		// Current form DOES NOT use a magic override.
-		//
-		// If we previously had one active, restore the original
-		// loadout and completely clear the override state.
-		// ---------------------------------------------------------
+		/*
+		 * ============================================================
+		 * CURRENT FORM HAS NO MAGIC OVERRIDE
+		 * ============================================================
+		 *
+		 * Examples:
+		 *
+		 * - Leaving Dark Form normally
+		 * - Joining the Organization while in Dark Form
+		 * - Being forcibly kicked out of a form
+		 * - Entering any normal/non-override form
+		 *
+		 * If we had an override active, RESTORE IT.
+		 *
+		 * Do NOT clear the saved state first.
+		 */
 		if (definition == null) {
 
 			if (hasSavedLoadout) {
 				FormMagicOverride.restoreOriginalLoadout(player);
-			}
+			} else if (overrideForm != null) {
 
-			FormMagicOverride.clearOverrideState(player);
+				/*
+				 * Broken/stale state:
+				 *
+				 * We somehow know an override form was active,
+				 * but there is no saved loadout to restore.
+				 *
+				 * Just clear the stale tracking data.
+				 */
+				FormMagicOverride.clearOverrideState(player);
+			}
 
 			return;
 		}
 
 
-		// ---------------------------------------------------------
-		// Current form DOES use an override, but there isn't an
-		// active saved state yet.
-		//
-		// Save the player's REAL current loadout and apply the form.
-		// ---------------------------------------------------------
-		if (overrideForm == null || !hasSavedLoadout) {
+		/*
+		 * ============================================================
+		 * CURRENT FORM DOES HAVE A MAGIC OVERRIDE
+		 * ============================================================
+		 *
+		 * No existing override means we just entered the form.
+		 */
+		if (!hasSavedLoadout || overrideForm == null) {
 
-			FormMagicOverride.clearOverrideState(player);
+			/*
+			 * If only half the state exists for some reason,
+			 * clear it before beginning a clean override.
+			 */
+			if (hasSavedLoadout || overrideForm != null) {
+				FormMagicOverride.clearOverrideState(player);
+			}
 
 			FormMagicOverride.beginOverride(
 					player,
@@ -2759,18 +2785,24 @@ public class EntityEventsRM {
 		}
 
 
-		// ---------------------------------------------------------
-		// Changed directly from override form A -> override form B.
-		//
-		// Restore the player's original loadout first, then use that
-		// as the backup for the new form.
-		// ---------------------------------------------------------
+		/*
+		 * ============================================================
+		 * TRANSITION BETWEEN OVERRIDE FORMS
+		 * ============================================================
+		 *
+		 * Example:
+		 *
+		 * Dark Form -> Light Form
+		 *
+		 * Restore the player's REAL loadout first.
+		 *
+		 * Then the next override snapshots that original loadout,
+		 * not the previous form's temporary spells.
+		 */
 		if (!overrideForm.equals(currentForm)) {
 
 			FormMagicOverride.restoreOriginalLoadout(player);
 
-			FormMagicOverride.clearOverrideState(player);
-
 			FormMagicOverride.beginOverride(
 					player,
 					definition
@@ -2780,10 +2812,13 @@ public class EntityEventsRM {
 		}
 
 
-		// ---------------------------------------------------------
-		// Same override form is still active.
-		// Keep its forced loadout equipped.
-		// ---------------------------------------------------------
+		/*
+		 * ============================================================
+		 * SAME OVERRIDE FORM
+		 * ============================================================
+		 *
+		 * Make sure the forced magic/Shotlock stays equipped.
+		 */
 		FormMagicOverride.enforceOverride(player);
 	}
 
