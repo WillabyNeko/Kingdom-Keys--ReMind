@@ -1,6 +1,7 @@
 package online.remind.remind.entity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
@@ -63,16 +64,67 @@ public class ModSpawnPlacementsRM {
                 ModSpawnPlacementsRM::checkBombFamilySpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE
         );
+
+        event.register(ModEntitiesRM.TYPE_FIRE_FLAN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ModEntitiesRM.TYPE_ICE_FLAN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ModEntitiesRM.TYPE_THUNDER_FLAN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ModEntitiesRM.TYPE_WIND_FLAN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ModEntitiesRM.TYPE_WATER_FLAN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ModEntitiesRM.TYPE_LIGHT_FLAN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ModEntitiesRM.TYPE_DARK_FLAN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
-    private static boolean checkBombFamilySpawnRules(
-            EntityType<? extends BombEntity> type,
+    private static boolean checkBombFamilySpawnRules(EntityType<? extends BombEntity> type, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+        // Normal hostile mob spawn rules
+        if (!Monster.checkAnyLightMonsterSpawnRules(type, level, spawnType, pos, random)) {
+            return false;
+        }
+
+        BlockPos below = pos.below();
+
+        // Don't spawn inside fluids
+        if (!level.getFluidState(pos).isEmpty()) {
+            return false;
+        }
+
+        // Don't spawn directly above lava/water
+        if (!level.getFluidState(below).isEmpty()) {
+            return false;
+        }
+
+        // Require a real solid surface underneath the entity
+        if (!level.getBlockState(below).isFaceSturdy(
+                level,
+                below,
+                Direction.UP
+        )) {
+            return false;
+        }
+
+        // Nether: allowed anywhere that passed the ground checks above
+        if (level.getLevel()
+                .dimension()
+                .equals(Level.NETHER)) {
+            return true;
+        }
+
+        // Overworld/etc: must additionally have lava nearby
+        return hasNearbyLava(
+                level,
+                pos,
+                LAVA_SEARCH_RADIUS
+        );
+    }
+
+    private static boolean checkFlanSpawnRules(
+            EntityType<? extends Monster> type,
             ServerLevelAccessor level,
             MobSpawnType spawnType,
             BlockPos pos,
             RandomSource random
     ) {
-        if (!Monster.checkAnyLightMonsterSpawnRules(
+        // Keep vanilla monster spawning rules
+        if (!Monster.checkMonsterSpawnRules(
                 type,
                 level,
                 spawnType,
@@ -82,17 +134,28 @@ public class ModSpawnPlacementsRM {
             return false;
         }
 
-        if (level.getLevel()
-                .dimension()
-                .equals(Level.NETHER)) {
-            return true;
+        BlockPos below = pos.below();
+
+        // Cannot spawn inside lava/water
+        if (!level.getFluidState(pos).isEmpty()) {
+            return false;
         }
 
-        return hasNearbyLava(
+        // Cannot spawn directly on top of lava/water
+        if (!level.getFluidState(below).isEmpty()) {
+            return false;
+        }
+
+        // Must have a real solid floor
+        if (!level.getBlockState(below).isFaceSturdy(
                 level,
-                pos,
-                LAVA_SEARCH_RADIUS
-        );
+                below,
+                Direction.UP
+        )) {
+            return false;
+        }
+
+        return true;
     }
 
     private static boolean hasNearbyLava(

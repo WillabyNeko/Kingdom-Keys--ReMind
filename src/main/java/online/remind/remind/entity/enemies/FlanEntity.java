@@ -140,6 +140,11 @@ public class FlanEntity extends Monster implements GeoEntity {
         return source.getEntity() instanceof Player;
     }
 
+    @Override
+    public boolean fireImmune() {
+        return isFireFlan() || super.fireImmune();
+    }
+
     public String getVariantName() {
         return switch (getVariant()) {
             case VARIANT_ICE -> "ice_flan";

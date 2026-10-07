@@ -1,5 +1,5 @@
-## __10.26.2__
+## __10.26.2a__
 *(Month.Year.Iteration)*
 
-- Fixed Summoned Party Members not following their respective owner.
-- Fixed an issue with Form-Magic Loadouts.
+- **[FIXED]** Flans in the Nether spawning midair.
+- **[FIXED]** Fire Flans are now immune to Lava and Vanilla Fire damage.
