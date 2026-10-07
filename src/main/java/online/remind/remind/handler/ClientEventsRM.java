@@ -761,6 +761,14 @@ public class ClientEventsRM {
 
 					}
 
+					// Dark Impulse Active
+					if (playerData.isFormActive(ModDriveFormsRM.DARK_IMPULSE)){
+						player.level().addParticle(new DustParticleOptions(new Vector3f(0.25f,0.0f,0.0F),0.2f),player.getX() + player.level().random.nextDouble() - 0.45D, player.getY()+ player.level().random.nextDouble() *2D, player.getZ() + player.level().random.nextDouble() - 0.45D, -1, -1, -1);
+						player.level().addParticle(new DustParticleOptions(new Vector3f(0.50f,0.0f,0.50f),0.35f),player.getX() + player.level().random.nextDouble() - 0.45D, player.getY()+ player.level().random.nextDouble() *2D, player.getZ() + player.level().random.nextDouble() - 0.45D, -1, -1, -1);
+						player.level().addParticle(new DustParticleOptions(new Vector3f(0f,0f,0f),0.65f),player.getX() + player.level().random.nextDouble() - 0.45D, player.getY()+ player.level().random.nextDouble() *2D, player.getZ() + player.level().random.nextDouble() - 0.45D, -1, -1, -1);
+
+					}
+
 					// Bloodlust Active
 					if (playerData.isFormActive(ModDriveFormsRM.BLOOSTLUST)){
 						player.level().addParticle(new DustParticleOptions(new Vector3f(0.95f,0f,0f),0.5f),player.getX() + player.level().random.nextDouble() - 0.45D, player.getY()+ player.level().random.nextDouble() *2D, player.getZ() + player.level().random.nextDouble() - 0.45D, -1, -1, -1);

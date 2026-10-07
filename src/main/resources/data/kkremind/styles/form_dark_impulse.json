@@ -1,8 +1,8 @@
 {
-  "target": "kkremind:form_critical_impact",
-  "finisher": "kkremind:rc_critical_impact",
-  "style_level": 1,
-  "elements": ["physical"],
+  "target": "kkremind:form_dark_impulse",
+  "finisher": "kkremind:rc_dark_impulse",
+  "style_level": 2,
+  "elements": ["dark"],
   "requires_specific_weapons": true,
   "required_weapons": ["kingdomkeys:earthshaker", "kingdomkeys:ends_of_the_earth", "kingdomkeys:darkgnaw", "kingdomkeys:chaos_ripper"]
 }

@@ -1,11 +1,13 @@
 package online.remind.remind.handler;
 
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -95,6 +97,8 @@ import java.util.*;
 public class EntityEventsRM {
 
 	public int ticks;
+
+	private static final Set<UUID> FEVER_PITCH_MULTI_HIT = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	public static Map<UUID, Item> ALLOWED_UUIDS = new HashMap<>();
 
@@ -477,6 +481,7 @@ public class EntityEventsRM {
 		playerData.setDriveFormLevel(ModDriveFormsRM.THUNDER_BOLT.location(), 1);
 		playerData.setDriveFormLevel(ModDriveFormsRM.FEVER_PITCH.location(), 1);
 		playerData.setDriveFormLevel(ModDriveFormsRM.CRITICAL_IMPACT.location(), 1);
+		playerData.setDriveFormLevel(ModDriveFormsRM.DARK_IMPULSE.location(), 1);
 		playerData.setDriveFormLevel(ModDriveFormsRM.SPELLWEAVER.location(), 1);
 		playerData.setDriveFormLevel(ModDriveFormsRM.BLOOSTLUST.location(), 1);
 		playerData.setDriveFormLevel(ModDriveFormsRM.EXSOLDIER.location(), 1);
@@ -1903,6 +1908,15 @@ public class EntityEventsRM {
 						player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED,2,1,true,true,true));
 					}
 
+					// Spellweaver Passive
+					if (playerData.isFormActive(ModDriveFormsRM.SPELLWEAVER)){
+						double maxMP = playerData.getMaxMP();
+						float boost = (float) (maxMP * 0.1F); // 10% of Max MP = Boost
+						playerData.getMagicStat().addModifier("Spellweaver", boost, false, false);
+					} else {
+						playerData.getDefenseStat().removeModifier("Spellweaver");
+					}
+
 					// EX-SOLDIER Passives
 
 					if (playerData.isFormActive(ModDriveFormsRM.EXSOLDIER)){
@@ -1911,13 +1925,13 @@ public class EntityEventsRM {
 							// Low HP Passive
 							//playerData.getStrengthStat().addModifier("Limit Break", 1, false, false);
 							//playerData.getMagicStat().addModifier("Limit Break", 1, false, false);
-							playerData.getDefenseStat().addModifier("Limit Break", 10, false, false);
+							playerData.getDefenseStat().addModifier("limit-break", 10, false, false);
 							playerData.addFocus(0.5);
 							PacketHandler.sendTo(new SCSyncPlayerData(player), (ServerPlayer) player);
 						} else {
 							//playerData.getStrengthStat().removeModifier("Limit Break");
 							//playerData.getMagicStat().removeModifier("Limit Break");
-							playerData.getDefenseStat().removeModifier("Limit Break");
+							playerData.getDefenseStat().removeModifier("limit-break");
 							playerData.addFocus(0.1);
 						}
 					} else {
@@ -2280,7 +2294,6 @@ public class EntityEventsRM {
 			// MP Shield
 			if (playerData.isAbilityEquipped(ModAbilitiesRM.MP_SHIELD) && playerData.getMP() > 0 && !playerData.getRecharge()) {
 				float DMGTaken = event.getNewDamage();
-
 				if (DMGTaken > playerData.getMP()) {
 					float overflowDMG = (float) (DMGTaken - playerData.getMP());
 					event.setNewDamage(overflowDMG);
@@ -2297,13 +2310,8 @@ public class EntityEventsRM {
 						PacketHandler.sendTo(new SCSyncPlayerData(player), (ServerPlayer) player);
 					}
 				}
-
 			}
-
-
 		}
-
-
 
 		// On Hit Effects
 		if (event.getSource().getEntity() instanceof Player player){
@@ -2311,23 +2319,47 @@ public class EntityEventsRM {
 			GlobalDataRM remindData = ModDataRM.getGlobal(player);
 			if(playerData != null) {
 
+				// Fever Pitch Passive
+				if (playerData.isFormActive(ModDriveFormsRM.FEVER_PITCH)) {
+					LivingEntity target = event.getEntity();
+					float amount = playerData.getStrength(true);
+					int atkHaste = playerData.getNumberOfAbilitiesEquipped(ModAbilitiesRM.ATTACK_HASTE);
 
-					/*double situationGain = (event.getNewDamage() * 0.1);
-					float situationMulti = (playerData.getNumberOfAbilitiesEquipped(StringsRM.situationBoost) *0.1f) + 1;
-					situationGain *= situationMulti;*/
+					if (atkHaste > 0 && !FEVER_PITCH_MULTI_HIT.contains(player.getUUID())) {
 
-					//System.out.println(situationGain + " * " + situationMulti +" = " + (situationGain*situationMulti));
-					//System.out.println(situationGain);
+						// 25% STR per supplemental hit
+						float multiHitDamage = amount * 0.25F;
+						MinecraftServer server = player.getServer();
+						if (server != null) {
+							for (int i = 0; i < atkHaste; i++) {
 
-				/*if (remindData != null){
-					remindData.addSituationValue(situationGain); //Hit increase
-					addSituationRCs(player);
-					remindData.setSCooldownTicks(60);
-					if (!playerData.getActiveDriveForm().equals(DriveForm.NONE.toString()) ) {
-						remindData.setStyleTicks(100);
+								// First hit after 3 ticks, second after 6, etc.
+								int delay = (i + 1) * 4;
+
+								server.tell(new TickTask(server.getTickCount() + delay, () -> {
+									if (!player.isAlive() || !target.isAlive()) {
+										return;
+									}
+
+									FEVER_PITCH_MULTI_HIT.add(player.getUUID());
+
+									try {
+										// Allow each supplemental hit to register
+										target.invulnerableTime = 0;
+
+										target.hurt(
+												player.damageSources().generic(),
+												multiHitDamage
+										);
+
+									} finally {
+										FEVER_PITCH_MULTI_HIT.remove(player.getUUID());
+									}
+								}));
+							}
+						}
 					}
-					PacketHandlerRM.syncGlobalToAllAround(player, remindData);
-				}*/
+				}
 
 				// Critical Impact Passive
 				if (playerData.isFormActive(ModDriveFormsRM.CRITICAL_IMPACT)) {
@@ -2349,11 +2381,10 @@ public class EntityEventsRM {
 					}
 				}
 
-
 				int crtBoosts = playerData.getNumberOfAbilitiesEquipped(ModAbilities.CRITICAL_BOOST);
-				float addDmg = (float) (crtBoosts * 1.5F);
 				if (playerData.isAbilityEquipped(ModAbilitiesRM.JECHT)){
 					if (event.getSource().type().msgId().equals("player")) { // Applies to ONLY melee
+						float addDmg = (float) (crtBoosts * 1.5F);
 						//System.out.println(addDmg);
 						event.getEntity().hurt(event.getEntity().damageSources().magic(), addDmg);
 						event.getEntity().invulnerableTime = 0;
@@ -2821,6 +2852,8 @@ public class EntityEventsRM {
 		 */
 		FormMagicOverride.enforceOverride(player);
 	}
+
+
 
 
 }

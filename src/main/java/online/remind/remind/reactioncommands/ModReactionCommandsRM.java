@@ -42,6 +42,7 @@ public class ModReactionCommandsRM {
         FEVER_PITCH_RC = register(StringsRM.RCMA_Prefix+"fever_pitch", () -> new StyleRC(ResourceLocation.parse(StringsRM.FeverPitchRC),false, KingdomKeysReMind.MODID+":"+StringsRM.feverPitch)),
         CRITICAL_IMPACT_RC = register(StringsRM.RCMA_Prefix+"critical_impact", () -> new StyleRC(ResourceLocation.parse(StringsRM.CriticalImpactRC),false, KingdomKeysReMind.MODID+":"+StringsRM.criticalImpact)),
         SPELLWEAVER_RC = register(StringsRM.RCMA_Prefix+"spellweaver", () -> new StyleRC(ResourceLocation.parse(StringsRM.SpellweaverRC),false, KingdomKeysReMind.MODID+":"+StringsRM.spellweaver)),
+        DARK_IMPULSE_RC = register(StringsRM.RCMA_Prefix+"dark_impulse", () -> new StyleRC(ResourceLocation.parse(StringsRM.DarkImpulseRC),false, KingdomKeysReMind.MODID+":"+StringsRM.darkImpulse)),
 
         // Xephiro Style
         BLOODLUST_RC = register(StringsRM.RCMA_Prefix+"bloodlust", () -> new StyleRC(ResourceLocation.parse(StringsRM.BloodlustRC),false, KingdomKeysReMind.MODID+":"+StringsRM.bloodlust)),

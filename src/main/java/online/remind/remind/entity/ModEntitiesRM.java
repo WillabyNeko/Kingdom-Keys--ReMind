@@ -306,49 +306,49 @@ public class ModEntitiesRM {
                 FlanEntity flan = new FlanEntity(type, level);
                 flan.setVariant(FlanEntity.VARIANT_FIRE);
                 return flan;
-            }, MobCategory.MONSTER, "fire_flan", 3.0F, 3.0F);
+            }, MobCategory.MONSTER, "fire_flan", 2.0F, 2.0F);
 
     public static final Supplier<EntityType<FlanEntity>> TYPE_ICE_FLAN =
             createEntityType((type, level) -> {
                 FlanEntity flan = new FlanEntity(type, level);
                 flan.setVariant(FlanEntity.VARIANT_ICE);
                 return flan;
-            }, MobCategory.MONSTER, "ice_flan", 3.0F, 3.0F);
+            }, MobCategory.MONSTER, "ice_flan", 2.0F, 2.0F);
 
     public static final Supplier<EntityType<FlanEntity>> TYPE_THUNDER_FLAN =
             createEntityType((type, level) -> {
                 FlanEntity flan = new FlanEntity(type, level);
                 flan.setVariant(FlanEntity.VARIANT_THUNDER);
                 return flan;
-            }, MobCategory.MONSTER, "thunder_flan", 3.0F, 3.0F);
+            }, MobCategory.MONSTER, "thunder_flan", 2.0F, 2.0F);
 
     public static final Supplier<EntityType<FlanEntity>> TYPE_WIND_FLAN =
             createEntityType((type, level) -> {
                 FlanEntity flan = new FlanEntity(type, level);
                 flan.setVariant(FlanEntity.VARIANT_WIND);
                 return flan;
-            }, MobCategory.MONSTER, "wind_flan", 3.0F, 3.0F);
+            }, MobCategory.MONSTER, "wind_flan", 2.0F, 2.0F);
 
     public static final Supplier<EntityType<FlanEntity>> TYPE_WATER_FLAN =
             createEntityType((type, level) -> {
                 FlanEntity flan = new FlanEntity(type, level);
                 flan.setVariant(FlanEntity.VARIANT_WATER);
                 return flan;
-            }, MobCategory.MONSTER, "water_flan", 3.0F, 3.0F);
+            }, MobCategory.MONSTER, "water_flan", 2.0F, 2.0F);
 
     public static final Supplier<EntityType<FlanEntity>> TYPE_LIGHT_FLAN =
             createEntityType((type, level) -> {
                 FlanEntity flan = new FlanEntity(type, level);
                 flan.setVariant(FlanEntity.VARIANT_LIGHT);
                 return flan;
-            }, MobCategory.MONSTER, "light_flan", 3.0F, 3.0F);
+            }, MobCategory.MONSTER, "light_flan", 2.0F, 2.0F);
 
     public static final Supplier<EntityType<FlanEntity>> TYPE_DARK_FLAN =
             createEntityType((type, level) -> {
                 FlanEntity flan = new FlanEntity(type, level);
                 flan.setVariant(FlanEntity.VARIANT_DARK);
                 return flan;
-            }, MobCategory.MONSTER, "dark_flan", 3.0F, 3.0F);
+            }, MobCategory.MONSTER, "dark_flan", 2.0F, 2.0F);
 
 
 

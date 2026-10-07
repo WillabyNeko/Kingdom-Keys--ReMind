@@ -62,6 +62,7 @@ public class StylesHUD {
         styles.add(ModDriveFormsRM.FEVER_PITCH.get().getRegistryName());
         styles.add(ModDriveFormsRM.CRITICAL_IMPACT.get().getRegistryName());
         styles.add(ModDriveFormsRM.SPELLWEAVER.get().getRegistryName());
+        styles.add(ModDriveFormsRM.DARK_IMPULSE.get().getRegistryName());
         styles.add(ModDriveFormsRM.BLOOSTLUST.get().getRegistryName());
         styles.add(ModDriveFormsRM.EXSOLDIER.get().getRegistryName());
 
@@ -93,6 +94,9 @@ public class StylesHUD {
                     break;
                 case "kkremind:form_spellweaver":
                     guiGraphics.setColor(0.85f,0.55f,0.85f ,1);
+                    break;
+                case "kkremind:form_dark_impulse":
+                    guiGraphics.setColor(0.75f,0.0f,0.0f ,1);
                     break;
                 case "kkremind:form_bloodlust":
                     guiGraphics.setColor(0.85f,0.0f,0.0f ,1);

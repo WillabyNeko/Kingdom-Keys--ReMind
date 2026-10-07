@@ -36,9 +36,11 @@ public class ModDriveFormsRM {
             CRITICAL_IMPACT = register(StringsRM.DFMA_Prefix+"critical_impact", () -> new StyleCriticalImpact(ResourceLocation.fromNamespaceAndPath(KingdomKeysReMind.MODID, StringsRM.DFMA_Prefix + "critical_impact"), order++, ResourceLocation.fromNamespaceAndPath(KingdomKeysReMind.MODID, "textures/models/armor/regen.png"), false, true)),
             SPELLWEAVER = register(StringsRM.DFMA_Prefix+"spellweaver", () -> new StyleSpellweaver(ResourceLocation.fromNamespaceAndPath(KingdomKeysReMind.MODID, StringsRM.DFMA_Prefix + "spellweaver"), order++, ResourceLocation.fromNamespaceAndPath(KingdomKeysReMind.MODID, "textures/models/armor/regen.png"), false, true)),
 
+            // Level 2 Styles
+            DARK_IMPULSE = register(StringsRM.DFMA_Prefix+"dark_impulse", () -> new StyleDarkImpulse(ResourceLocation.fromNamespaceAndPath(KingdomKeysReMind.MODID, StringsRM.DFMA_Prefix + "dark_impulse"), order++, ResourceLocation.fromNamespaceAndPath(KingdomKeysReMind.MODID, "textures/models/armor/regen.png"), false, true)),
 
+            // Re:Mind Original Styles
             BLOOSTLUST = register(StringsRM.DFMA_Prefix+"bloodlust", () -> new StyleBloodlust(ResourceLocation.fromNamespaceAndPath(KingdomKeysReMind.MODID, StringsRM.DFMA_Prefix + "bloodlust"), order++, ResourceLocation.fromNamespaceAndPath(KingdomKeysReMind.MODID, "textures/models/armor/regen.png"), false, true)),
-
             EXSOLDIER = register(StringsRM.DFMA_Prefix+"ex_soldier", () -> new StyleExSOLDIER(ResourceLocation.fromNamespaceAndPath(KingdomKeysReMind.MODID, StringsRM.DFMA_Prefix + "ex_soldier"), order++, ResourceLocation.fromNamespaceAndPath(KingdomKeysReMind.MODID, "textures/models/armor/regen.png"), false, true)),
 
         // Commission Forms

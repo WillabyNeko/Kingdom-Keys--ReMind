@@ -4,6 +4,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,6 +16,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
+import net.minecraft.world.phys.Vec3;
 import online.kingdomkeys.kingdomkeys.ability.ModAbilities;
 import online.kingdomkeys.kingdomkeys.data.PlayerData;
 import online.kingdomkeys.kingdomkeys.data.WorldData;
@@ -37,6 +39,7 @@ import online.remind.remind.network.PacketHandlerRM;
 import online.remind.remind.styles.data.StyleDefinition;
 import online.remind.remind.styles.data.StyleRegistry;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class StyleRC extends ReactionCommand {
@@ -110,51 +113,459 @@ public class StyleRC extends ReactionCommand {
 		switch (type) {
 
 			case KingdomKeysReMind.MODID + ":" + StringsRM.fireStorm -> {
-				float mult = playerData.getNumberOfAbilitiesEquipped(ModAbilities.FIRE_BOOST) * 0.25f;
-				damage += damage * mult;
-				explosionHurt(player, damage, KKDamageTypes.FIRE);
-				playSoundAndParticles(player, SoundEvents.BLAZE_SHOOT,
-						ParticleTypes.FLAME, ParticleTypes.SMALL_FLAME, ParticleTypes.ASH);
+				float mult = playerData.getNumberOfAbilitiesEquipped(ModAbilities.FIRE_BOOST) * 0.25F;
+				final float finisherDamage = damage * (1.0F + mult);
+
+				MinecraftServer server = player.getServer();
+
+				// BBS: leap upward and charge the fire attack
+				player.setDeltaMovement(
+						player.getDeltaMovement().x,
+						0.65D,
+						player.getDeltaMovement().z
+				);
+				player.hasImpulse = true;
+
+				playSoundAndParticles(
+						player,
+						SoundEvents.BLAZE_SHOOT,
+						ParticleTypes.FLAME,
+						ParticleTypes.SMALL_FLAME
+				);
+
+				if (server != null) {
+					// BBS finisher produces multiple flame pillars.
+					// Split the damage between them instead of doing full damage 3x.
+					for (int i = 0; i < 3; i++) {
+						final int pillar = i;
+
+						server.tell(new TickTask(
+								server.getTickCount() + 6 + (pillar * 2),
+								() -> {
+									if (!player.isAlive()) {
+										return;
+									}
+
+									explosionHurt(
+											player,
+											finisherDamage / 3.0F,
+											KKDamageTypes.FIRE
+									);
+
+									playSoundAndParticles(
+											player,
+											SoundEvents.FIRECHARGE_USE,
+											ParticleTypes.FLAME,
+											ParticleTypes.LAVA,
+											ParticleTypes.SMALL_FLAME
+									);
+								}
+						));
+					}
+				}
 			}
 
 			case KingdomKeysReMind.MODID + ":" + StringsRM.diamondDust -> {
-				float mult = playerData.getNumberOfAbilitiesEquipped(ModAbilities.BLIZZARD_BOOST) * 0.25f;
-				damage += damage * mult;
-				explosionHurt(player, damage, KKDamageTypes.ICE);
-				playSoundAndParticles(player, SoundEvents.GLASS_BREAK,
-						ParticleTypes.SNOWFLAKE, ParticleTypes.ITEM_SNOWBALL);
+				float mult = playerData.getNumberOfAbilitiesEquipped(ModAbilities.BLIZZARD_BOOST) * 0.25F;
+				final float finisherDamage = damage * (1.0F + mult);
+
+				MinecraftServer server = player.getServer();
+
+				// Glacier forming
+				playSoundAndParticles(
+						player,
+						SoundEvents.POWDER_SNOW_PLACE,
+						ParticleTypes.SNOWFLAKE,
+						ParticleTypes.ITEM_SNOWBALL
+				);
+
+				if (server != null) {
+					server.tell(new TickTask(
+							server.getTickCount() + 6,
+							() -> {
+								if (!player.isAlive()) {
+									return;
+								}
+
+								// BBS: giant glacier bursts around the user
+								explosionHurt(
+										player,
+										finisherDamage,
+										KKDamageTypes.ICE
+								);
+
+								playSoundAndParticles(
+										player,
+										SoundEvents.GLASS_BREAK,
+										ParticleTypes.SNOWFLAKE,
+										ParticleTypes.ITEM_SNOWBALL,
+										ParticleTypes.CLOUD
+								);
+							}
+					));
+				}
 			}
 
 			case KingdomKeysReMind.MODID + ":" + StringsRM.thunderBolt -> {
-				float mult = playerData.getNumberOfAbilitiesEquipped(ModAbilities.THUNDER_BOOST) * 0.25f;
-				damage += damage * mult;
-				explosionHurt(player, damage, KKDamageTypes.LIGHTNING);
-				playSoundAndParticles(player, SoundEvents.LIGHTNING_BOLT_THUNDER,
-						ParticleTypes.ELECTRIC_SPARK, ParticleTypes.END_ROD);
+				float mult = playerData.getNumberOfAbilitiesEquipped(ModAbilities.THUNDER_BOOST) * 0.25F;
+				final float finisherDamage = damage * (1.0F + mult);
+
+				MinecraftServer server = player.getServer();
+
+				// BBS: raise Keyblade and form the electric orb
+				playSoundAndParticles(
+						player,
+						SoundEvents.BEACON_POWER_SELECT,
+						ParticleTypes.ELECTRIC_SPARK,
+						ParticleTypes.END_ROD
+				);
+
+				if (server != null) {
+					// Three raining lightning strikes
+					for (int i = 0; i < 3; i++) {
+						final int strike = i;
+
+						server.tell(new TickTask(
+								server.getTickCount() + 4 + (strike * 3),
+								() -> {
+									if (!player.isAlive()) {
+										return;
+									}
+
+									explosionHurt(
+											player,
+											finisherDamage / 3.0F,
+											KKDamageTypes.LIGHTNING
+									);
+
+									playSoundAndParticles(
+											player,
+											SoundEvents.LIGHTNING_BOLT_IMPACT,
+											ParticleTypes.ELECTRIC_SPARK,
+											ParticleTypes.END_ROD
+									);
+								}
+						));
+					}
+				}
 			}
 
 			case KingdomKeysReMind.MODID + ":" + StringsRM.feverPitch -> {
-				float mult = playerData.getNumberOfAbilitiesEquipped(ModAbilitiesRM.ATTACK_HASTE) * 0.25f;
-				damage += damage * mult;
-				explosionHurt(player, damage, KKDamageTypes.OFFHAND);
-				playSoundAndParticles(player, SoundEvents.PLAYER_ATTACK_SWEEP,
-						ParticleTypes.CRIT);
+				int atkHaste = playerData.getNumberOfAbilitiesEquipped(
+						ModAbilitiesRM.ATTACK_HASTE
+				);
+
+				/*
+				 * For Fever Pitch I would NOT make Attack Haste add 25% damage.
+				 * Make it speed up the finisher instead.
+				 */
+				final int spacing = Math.max(
+						1,
+						3 - Math.min(atkHaste, 2)
+				);
+
+				final float finisherDamage = damage;
+
+				MinecraftServer server = player.getServer();
+
+				Vec3 look = player.getLookAngle().normalize();
+
+				// Initial forward rush
+				player.setDeltaMovement(
+						look.x * 0.45D,
+						player.getDeltaMovement().y,
+						look.z * 0.45D
+				);
+				player.hasImpulse = true;
+
+				if (server != null) {
+
+					// BBS: four rapid forward strikes
+					for (int i = 0; i < 4; i++) {
+						final int hit = i;
+
+						server.tell(new TickTask(
+								server.getTickCount() + (hit * spacing),
+								() -> {
+									if (!player.isAlive()) {
+										return;
+									}
+
+									explosionHurt(
+											player,
+											finisherDamage * 0.15F,
+											KKDamageTypes.OFFHAND
+									);
+
+									playSoundAndParticles(
+											player,
+											SoundEvents.PLAYER_ATTACK_SWEEP,
+											ParticleTypes.SWEEP_ATTACK,
+											ParticleTypes.CRIT
+									);
+								}
+						));
+					}
+
+					// Final light-slash portion
+					server.tell(new TickTask(
+							server.getTickCount() + (4 * spacing) + 1,
+							() -> {
+								if (!player.isAlive()) {
+									return;
+								}
+
+								explosionHurt(
+										player,
+										finisherDamage * 0.40F,
+										KKDamageTypes.OFFHAND
+								);
+
+								playSoundAndParticles(
+										player,
+										SoundEvents.PLAYER_ATTACK_STRONG,
+										ParticleTypes.SWEEP_ATTACK,
+										ParticleTypes.END_ROD,
+										ParticleTypes.CRIT
+								);
+							}
+					));
+				}
 			}
 
 			case KingdomKeysReMind.MODID + ":" + StringsRM.criticalImpact -> {
-				float mult = playerData.getNumberOfAbilitiesEquipped(ModAbilities.CRITICAL_BOOST) * 0.25f;
-				damage += damage * mult;
-				explosionHurt(player, damage, KKDamageTypes.OFFHAND);
-				playSoundAndParticles(player, SoundEvents.PLAYER_ATTACK_SWEEP,
-						ParticleTypes.SNOWFLAKE, ParticleTypes.ITEM_SNOWBALL);
+				float mult = playerData.getNumberOfAbilitiesEquipped(
+						ModAbilities.CRITICAL_BOOST
+				) * 0.25F;
+
+				final float finisherDamage = damage * (1.0F + mult);
+
+				MinecraftServer server = player.getServer();
+
+				// BBS: jump upward first
+				player.setDeltaMovement(
+						player.getDeltaMovement().x,
+						0.80D,
+						player.getDeltaMovement().z
+				);
+				player.hasImpulse = true;
+
+				if (server != null) {
+
+					// Start the downward slam
+					server.tell(new TickTask(
+							server.getTickCount() + 5,
+							() -> {
+								if (!player.isAlive()) {
+									return;
+								}
+
+								player.setDeltaMovement(
+										0.0D,
+										-1.25D,
+										0.0D
+								);
+								player.hasImpulse = true;
+							}
+					));
+
+					// Ground impact
+					server.tell(new TickTask(
+							server.getTickCount() + 8,
+							() -> {
+								if (!player.isAlive()) {
+									return;
+								}
+
+								player.fallDistance = 0.0F;
+
+								explosionHurt(
+										player,
+										finisherDamage,
+										KKDamageTypes.OFFHAND
+								);
+
+								playSoundAndParticles(
+										player,
+										SoundEvents.GENERIC_EXPLODE.value(),
+										ParticleTypes.EXPLOSION,
+										ParticleTypes.CRIT,
+										ParticleTypes.CAMPFIRE_COSY_SMOKE
+								);
+							}
+					));
+				}
 			}
 
 			case KingdomKeysReMind.MODID + ":" + StringsRM.spellweaver -> {
-				float mult = playerData.getNumberOfAbilitiesEquipped(ModAbilities.BLIZZARD_BOOST) * 0.25f;
+				final float finisherDamage = damage;
+
+				MinecraftServer server = player.getServer();
+
+				playSoundAndParticles(
+						player,
+						SoundEvents.EVOKER_CAST_SPELL,
+						ParticleTypes.ENCHANT,
+						ParticleTypes.END_ROD
+				);
+
+				if (server != null) {
+
+					/*
+					 * Actual BBS Spellweaver is listed as 28 hits.
+					 *
+					 * Minecraft runs at 20 TPS, so one pulse every tick gives us
+					 * a ~1.4 second magical spinning barrage.
+					 *
+					 * Player isn't rooted, so they can move during it like the
+					 * BBS left-stick-controlled finisher.
+					 */
+					for (int i = 0; i < 28; i++) {
+						final int hit = i;
+
+						server.tell(new TickTask(
+								server.getTickCount() + hit,
+								() -> {
+									if (!player.isAlive()) {
+										return;
+									}
+
+									explosionHurt(
+											player,
+											finisherDamage / 28.0F,
+											KKDamageTypes.OFFHAND
+									);
+
+									// Don't spam the sound 28 times
+									if (hit % 4 == 0) {
+										playSoundAndParticles(
+												player,
+												SoundEvents.AMETHYST_BLOCK_CHIME,
+												ParticleTypes.ENCHANT,
+												ParticleTypes.END_ROD
+										);
+									}
+								}
+						));
+					}
+
+					server.tell(new TickTask(
+							server.getTickCount() + 28,
+							() -> {
+								if (!player.isAlive()) {
+									return;
+								}
+
+								playSoundAndParticles(
+										player,
+										SoundEvents.EVOKER_CAST_SPELL,
+										ParticleTypes.END_ROD,
+										ParticleTypes.ENCHANT
+								);
+							}
+					));
+				}
+			}
+
+			case KingdomKeysReMind.MODID + ":" + StringsRM.darkImpulse -> {
+
+				// Dark Boost scaling
+				float mult = playerData.getNumberOfAbilitiesEquipped(ModAbilitiesRM.DARKNESS_BOOST) * 0.25F;
+
 				damage += damage * mult;
-				explosionHurt(player, damage, KKDamageTypes.STOP);
-				playSoundAndParticles(player, SoundEvents.EVOKER_CAST_SPELL,
-						ParticleTypes.ENCHANT);
+
+				final float darkImpulseDamage = damage;
+				// Find the nearest enemy to burst underneath
+				LivingEntity target = player.level()
+						.getEntitiesOfClass(
+								LivingEntity.class,
+								player.getBoundingBox().inflate(12.0D),
+								entity ->
+										entity != player
+												&& entity.isAlive()
+												&& !(entity instanceof Player)
+						)
+						.stream()
+						.min(Comparator.comparingDouble(player::distanceToSqr))
+						.orElse(null);
+
+				if (target == null) {
+					// No target: just perform the burst where the player is
+					explosionHurt(player, darkImpulseDamage, KKDamageTypes.DARKNESS);
+					playSoundAndParticles(player, SoundEvents.ENDERMAN_TELEPORT, ParticleTypes.SMOKE);
+					break;
+				}
+
+				MinecraftServer server = player.getServer();
+
+				if (server == null) {
+					break;
+				}
+
+				// Prevent the player from colliding while "underground"
+				player.noPhysics = true;
+				player.setInvisible(true);
+
+				// Sink
+				player.setDeltaMovement(0.0D, -0.25D, 0.0D);
+
+				playSoundAndParticles(
+						player,
+						SoundEvents.ENDERMAN_TELEPORT,
+						ParticleTypes.SMOKE
+				);
+
+				// Move underneath the target after a short delay
+				server.tell(new TickTask(
+						server.getTickCount() + 4,
+						() -> {
+							if (!player.isAlive() || !target.isAlive()) {
+								player.noPhysics = false;
+								player.setInvisible(false);
+								return;
+							}
+
+							player.teleportTo(
+									target.getX(),
+									target.getY() - 1.0D,
+									target.getZ()
+							);
+
+							// Burst out shortly afterward
+							server.tell(new TickTask(
+									server.getTickCount() + 3,
+									() -> {
+										if (!player.isAlive()) {
+											return;
+										}
+
+										player.teleportTo(
+												target.getX(),
+												target.getY(),
+												target.getZ()
+										);
+
+										player.noPhysics = false;
+										player.setInvisible(false);
+
+										// Upward uppercut motion
+										player.setDeltaMovement(
+												0.0D,
+												0.85D,
+												0.0D
+										);
+
+										player.hasImpulse = true;
+
+										explosionHurt(
+												player,
+												darkImpulseDamage,
+												KKDamageTypes.DARKNESS
+										);
+									}
+							));
+						}
+				));
 			}
 
 			case KingdomKeysReMind.MODID + ":" + StringsRM.bloodlust -> {

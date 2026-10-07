@@ -8,7 +8,7 @@
   "speed_mult": 1,
   "level_up":[ 0, 150, 300, 450, 600, 750, 900 ],
   "abilities": [
-    "kingdomkeys:ability_fire_boost","kingdomkeys:ability_thunder_boost","kingdomkeys:ability_blizzard_boost","kingdomkeys:ability_mp_hastera","kingdomkeys:ability_form_boost","kingdomkeys:ability_form_boost","kingdomkeys:ability_form_boost"
+    "kkremind:ability_mp_boost", "kkremind:ability_mp_boost", "kingdomkeys:ability_fire_boost","kingdomkeys:ability_thunder_boost","kingdomkeys:ability_blizzard_boost","kingdomkeys:ability_mp_haste","kingdomkeys:ability_mp_hastera","kingdomkeys:ability_form_boost","kingdomkeys:ability_form_boost","kingdomkeys:ability_form_boost"
   ],
   "base_levelup_abilities":[ "", "", "", "", "", "", "" ],
   "driveform_levelup_abilities":[ "", "", "", "","","","" ]

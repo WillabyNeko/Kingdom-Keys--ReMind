@@ -40,6 +40,7 @@ public class StringsRM {
         feverPitch = StringsRM.DFMA_Prefix+"fever_pitch",
         criticalImpact = StringsRM.DFMA_Prefix+"critical_impact",
         spellweaver = StringsRM.DFMA_Prefix+"spellweaver",
+        darkImpulse = StringsRM.DFMA_Prefix+"dark_impulse",
         bloodlust = StringsRM.DFMA_Prefix+"bloodlust",
         exSoldier = StringsRM.DFMA_Prefix+"ex_soldier",
 
@@ -272,6 +273,7 @@ public class StringsRM {
         FeverPitchRC = KingdomKeysReMind.MODID+":"+StringsRM.RCMA_Prefix+"fever_pitch",
         CriticalImpactRC = KingdomKeysReMind.MODID+":"+StringsRM.RCMA_Prefix+"critical_impact",
         SpellweaverRC = KingdomKeysReMind.MODID+":"+StringsRM.RCMA_Prefix+"spellweaver",
+        DarkImpulseRC = KingdomKeysReMind.MODID+":"+StringsRM.RCMA_Prefix+"dark_impulse",
         BloodlustRC = KingdomKeysReMind.MODID+":"+StringsRM.RCMA_Prefix+"bloodlust",
         ExSoldierRC = KingdomKeysReMind.MODID+":"+StringsRM.RCMA_Prefix+"ex_soldier",
 

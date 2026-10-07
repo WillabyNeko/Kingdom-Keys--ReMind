@@ -399,6 +399,7 @@
   "form.form_fever_pitch.name": "Fever Pitch",
   "form.form_critical_impact.name": "Critical Impact",
   "form.form_spellweaver.name": "Spellweaver",
+  "form.form_dark_impulse.name": "Dark Impulse",
   "form.form_bloodlust.name": "Bloodlust",
   "form.form_ex_soldier.name": "Ex-SOLDIER",
 
@@ -577,6 +578,7 @@
   "reactioncommand.kkremind.rc_fever_pitch.name": "Fever Pitch",
   "reactioncommand.kkremind.rc_critical_impact.name": "Critical Impact",
   "reactioncommand.kkremind.rc_spellweaver.name": "Spellweaver",
+  "reactioncommand.kkremind.rc_dark_impulse.name": "Dark Impulse",
   "reactioncommand.kkremind.rc_bloodlust.name": "Bloodlust",
   "reactioncommand.kkremind.rc_ex_soldier.name": "EX-Soldier",
 
