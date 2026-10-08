@@ -2,7 +2,7 @@
   "target": "kingdomkeys:magic_warp",
 
   "elements": ["MAGIC"],
-  "specific_styles": [],
+  "specific_styles": ["kkremind:form_dark_impulse"],
 
   "base_value": 30
 }

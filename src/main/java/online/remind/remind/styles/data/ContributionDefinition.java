@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * @param target         The actual registry ID this contribution applies to (e.g. kingdomkeys:magic_fire)
  * @param elements       Elements this contribution applies to (FIRE, STRIKE, PHYSICAL, etc.)
- * @param specificStyles Specific Styles this contribution applies to (form_firestorm, form_bladecharge, etc.)
+ * @param specificStyles Specific Styles this contribution applies to (kkremind:form_firestorm, kkremind:form_dark_impulse, etc.)
  * @param baseValue      Base SGauge value (Level 1)
  * @param perLevelBonus  SGauge added per level above 1
  * @param levelOverrides Optional overrides for specific levels
@@ -24,6 +24,7 @@ public record ContributionDefinition(ResourceLocation target,
     /**
      * Computes the SGauge value for a given spell/RC level.
      * Level is 1-based (Fire=1, Fira=2, Firaga=3, Firaza=4).
+     * DEFUNCT, IGNORE
      */
     public int computeValue(int level) {
         Integer override = levelOverrides.get(level);

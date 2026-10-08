@@ -2,7 +2,7 @@
   "target": "kkremind:attack_zantetsuken",
 
   "elements": ["COMBO", "PHYSICAL"],
-  "specific_styles": [],
+  "specific_styles": ["kkremind:form_dark_impulse"],
 
   "base_value": 40
 }

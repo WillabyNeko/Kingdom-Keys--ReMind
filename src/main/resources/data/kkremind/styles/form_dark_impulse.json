@@ -2,7 +2,7 @@
   "target": "kkremind:form_dark_impulse",
   "finisher": "kkremind:rc_dark_impulse",
   "style_level": 2,
-  "elements": ["dark"],
+  "elements": ["DARK","GRAVITY","MAGNET","STATUS"],
   "requires_specific_weapons": true,
   "required_weapons": ["kingdomkeys:earthshaker", "kingdomkeys:ends_of_the_earth", "kingdomkeys:darkgnaw", "kingdomkeys:chaos_ripper"]
 }
